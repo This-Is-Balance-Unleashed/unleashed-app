@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "Hit Refresh: Career + Wellness Summit 2026",
     description: "Join Nigeria's premier career and wellness summit on February 28, 2026 in Lagos.",
     images: ["/opengraph-image"],
-    creator: "@unleashed_conf",
+    creator: "@balanceunleashd",
   },
   robots: {
     index: true,
