@@ -83,7 +83,7 @@ export function FinalCTASection() {
 
             {/* Content */}
             <div className="relative z-10 text-center space-y-8">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-melo text-white leading-tight max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-melo font-semibold text-white leading-tight max-w-3xl mx-auto">
                 You don&apos;t have to wait until you&apos;re overwhelmed to choose yourself
               </h2>
 

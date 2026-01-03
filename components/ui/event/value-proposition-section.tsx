@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { MotivationIcon } from '../icons';
 
 export function ValuePropositionSection() {
   const features = [
@@ -42,13 +43,7 @@ export function ValuePropositionSection() {
             This Is Not Another Motivation Rally
           </h2>
           {/* Green underline decoration */}
-          <Image
-            src="/motivation.svg"
-            alt="Underline decoration"
-            width={300}
-            height={20}
-            className="absolute top-10 right-4/15 mx-auto w-64 md:w-80"
-          />
+          <MotivationIcon className="absolute top-10 right-4/15 mx-auto w-64 md:w-80" />
           <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-sans mt-10">
             You&apos;ve been giving your best: your time, your care, your energy. But lately, the
             spark feels dimmer & the days feel heavier. And even when you rest, it doesn&apos;t feel

@@ -1,20 +1,29 @@
-import Image from 'next/image';
-import { Button } from './button';
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "./button";
+import {
+  FourGreenBubblesIcon,
+  RightSwooshIcon,
+  UnderBreatheIcon,
+  TinglesIcon,
+  WIcon,
+} from "../icons";
 
 export function HeroSection() {
   return (
     <section
       className="relative min-h-screen overflow-hidden"
       style={{
-        background: 'linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)',
+        background:
+          "linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)",
       }}
     >
       {/* Noise texture overlay */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
         style={{
-          backgroundImage: 'url(/noise.svg)',
-          backgroundSize: 'cover',
+          backgroundImage: "url(/noise.svg)",
+          backgroundSize: "cover",
         }}
       />
 
@@ -30,7 +39,12 @@ export function HeroSection() {
           />
         </div>
         <Button variant="primary" size="md">
-          Sponsor A Ticket
+          <Link
+            href="/sponsor"
+            className="block text-base font-medium font-sans"
+          >
+            Sponsor A Ticket
+          </Link>
         </Button>
       </header>
 
@@ -38,13 +52,7 @@ export function HeroSection() {
       <div className="relative z-10 container mx-auto px-6 py-12 lg:py-20">
         {/* Background bubbles decoration */}
         <div className="absolute left-0 top-0 w-full h-full pointer-events-none">
-          <Image
-            src="/four-green-bubbles.svg"
-            alt="Background decoration"
-            width={500}
-            height={800}
-            className="absolute left-0 top-1/25 w-150 md:w-175 lg:w-150 opacity-80"
-          />
+          <FourGreenBubblesIcon className="absolute left-0 top-1/25 w-150 md:w-175 lg:w-150 opacity-80" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -55,10 +63,10 @@ export function HeroSection() {
               <div
                 className="px-8 py-4 md:px-15 md:py-7 inline-flex items-center gap-2"
                 style={{
-                  backgroundImage: 'url(/border-date.svg)',
-                  backgroundSize: '100% 100%',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center',
+                  backgroundImage: "url(/border-date.svg)",
+                  backgroundSize: "100% 100%",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
                 }}
               >
                 <span className="text-sm md:text-base font-medium font-sans">
@@ -66,7 +74,6 @@ export function HeroSection() {
                 </span>
               </div>
               {/* Orange decorative swoosh */}
-
             </div>
 
             {/* Main Headline */}
@@ -78,28 +85,17 @@ export function HeroSection() {
                   Breathe Again
                 </h1>
                 {/* Right swoosh beside the n */}
-                <Image
-                  src="/right-swoosh.svg"
-                  alt="Swoosh decoration"
-                  width={60}
-                  height={60}
-                  className="absolute -right-12 md:-right-16 top-1/2 w-12 md:w-16 rotate-12"
-                />
+                <RightSwooshIcon className="absolute -right-12 md:-right-16 top-1/2 w-12 md:w-16 rotate-12" />
               </div>
               {/* Underline decoration */}
-              <Image
-                src="/under-breathe.svg"
-                alt="Underline decoration"
-                width={450}
-                height={30}
-                className="w-96 md:w-lg lg:w-98"
-              />
+              <UnderBreatheIcon className="w-96 md:w-lg lg:w-98" />
             </div>
 
             {/* Subheading */}
             <p className="text-lg md:text-xl max-w-lg leading-relaxed font-sans">
-              Hit Refresh is your one-day pause; A chance to reset how you work, live, earn and lead.
-              Embrace this opportunity to reset and get strategies that empower you to thrive in 2026.
+              Hit Refresh is your one-day pause; A chance to reset how you work,
+              live, earn and lead. Embrace this opportunity to reset and get
+              strategies that empower you to thrive in 2026.
             </p>
 
             {/* CTA Button */}
@@ -111,13 +107,7 @@ export function HeroSection() {
           {/* Right Column - Hero Image */}
           <div className="relative">
             {/* Decorative swooshes */}
-            <Image
-              src="/tingles.svg"
-              alt="Decoration"
-              width={100}
-              height={100}
-              className="absolute rotate-y-180 top-1 -left-15 w-20 h-20 md:w-24 md:h-24"
-            />
+            <TinglesIcon className="absolute rotate-y-180 top-1 -left-15 w-20 h-20 md:w-24 md:h-24" />
 
             {/* Image Container with skew */}
             <div className="relative transform rounded-2xl overflow-hidden">
@@ -132,14 +122,7 @@ export function HeroSection() {
             </div>
 
             {/* Bottom decorative swoosh */}
-            <Image
-              src="/w.svg"
-              alt="Decoration"
-              width={80}
-              height={80}
-              className="absolute rotate-80 bottom-6 -left-11 w-16 h-16 md:w-20 md:h-20"
-            />
-            
+            <WIcon className="absolute rotate-80 bottom-6 -left-11 w-16 h-16 md:w-20 md:h-20" />
           </div>
         </div>
       </div>

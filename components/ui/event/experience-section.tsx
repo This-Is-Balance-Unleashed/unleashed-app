@@ -1,27 +1,28 @@
-import Image from 'next/image';
-import { Button } from './button';
+import Image from "next/image";
+import { Button } from "./button";
+import { ZigzagIcon, WIcon, TinglesIcon } from '../icons';
 
 export function ExperienceSection() {
   const experiences = [
     {
-      title: 'Keynotes:',
+      title: "Keynotes:",
       description:
-        'Designing careers & businesses rooted in purpose, global impact and wellness',
+        "Designing careers & businesses rooted in purpose, global impact and wellness",
     },
     {
-      title: 'Speaker Sessions:',
+      title: "Speaker Sessions:",
       description:
-        'Insights from industry leaders who took a step back & built remarkable careers.',
+        "Insights from industry leaders who took a step back & built remarkable careers.",
     },
     {
-      title: 'Panel Sessions:',
+      title: "Panel Sessions:",
       description:
-        'Insights for financial and all-round growth for a more sustainable and impactful life.',
+        "Insights for financial and all-round growth for a more sustainable and impactful life.",
     },
     {
-      title: 'Masterclasses:',
+      title: "Masterclasses:",
       description:
-        'Practical systems for calm yet efficient productivity rooted in wellness.',
+        "Practical systems for calm yet efficient productivity rooted in wellness.",
     },
   ];
 
@@ -31,8 +32,8 @@ export function ExperienceSection() {
       <div
         className="absolute inset-0 pointer-events-none opacity-20"
         style={{
-          backgroundImage: 'url(/white-noise.svg)',
-          backgroundSize: 'cover',
+          backgroundImage: "url(/white-noise.svg)",
+          backgroundSize: "cover",
         }}
       />
 
@@ -59,16 +60,10 @@ export function ExperienceSection() {
             What You Will Experience
           </h2>
           {/* Orange wavy underline */}
-          <Image
-            src="/zigzag.svg"
-            alt="Zigzag decoration"
-            width={327}
-            height={214}
-            className="absolute right-32/100 top-13 -rotate-1 mx-auto w-64 md:w-65 mb-6"
-          />
+          <ZigzagIcon className="absolute right-32/100 top-13 -rotate-1 mx-auto w-64 md:w-65 mb-6" />
           <p className="text-lg md:text-xl text-white max-w-2xl mx-auto leading-relaxed font-sans mt-8">
-            Rooted in purpose, insights from industry leaders, and all round growth for a
-            sustainable and impactful life
+            Rooted in purpose, insights from industry leaders, and all round
+            growth for a sustainable and impactful life
           </p>
         </div>
 
@@ -95,7 +90,7 @@ export function ExperienceSection() {
 
                 <div className="text-white">
                   <p className="text-base md:text-lg leading-relaxed font-sans max-w-[45ch]">
-                    <span className="font-bold">{experience.title}</span>{' '}
+                    <span className="font-bold">{experience.title}</span>{" "}
                     {experience.description}
                   </p>
                 </div>
@@ -113,13 +108,7 @@ export function ExperienceSection() {
           {/* Right Column - Event Photo */}
           <div className="relative">
             {/* Decorative w.svg at top */}
-            <Image
-              src="/w.svg"
-              alt="Decoration"
-              width={80}
-              height={80}
-              className="z-10 absolute -top-4 -left-6 w-16 h-16 md:w-20 md:h-20"
-            />
+            <WIcon className="z-10 absolute -top-4 -left-6 w-16 h-16 md:w-20 md:h-20" />
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
@@ -132,39 +121,13 @@ export function ExperienceSection() {
             </div>
 
             {/* Bottom decorative tingles.svg */}
-            <Image
-              src="/tingles.svg"
-              alt="Decoration"
-              width={100}
-              height={100}
-              className="absolute -bottom-8 -right-8 w-20 h-20 md:w-24 md:h-24"
-            />
+            <TinglesIcon className="absolute -bottom-8 -right-8 w-20 h-20 md:w-24 md:h-24" />
           </div>
         </div>
       </div>
 
       {/* Green wave decoration at section bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 overflow-hidden">
-        <svg
-          className="w-full h-full"
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0 60 Q360 20 720 60 T1440 60 L1440 120 L0 120 Z"
-            fill="var(--color-secondary)"
-            fillOpacity="0.3"
-          />
-          <path
-            d="M0 80 Q360 40 720 80 T1440 80 L1440 120 L0 120 Z"
-            fill="var(--color-secondary)"
-            fillOpacity="0.5"
-          />
-          <path d="M0 100 Q360 70 720 100 T1440 100 L1440 120 L0 120 Z" fill="var(--color-secondary)" />
-        </svg>
-      </div>
+      
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react';
+import { CheckmarkIcon, XIcon } from '../icons';
 
 export function TargetAudienceSection() {
   const forYouList = [
@@ -18,6 +18,7 @@ export function TargetAudienceSection() {
   return (
     <section className="relative bg-primary-light py-20 overflow-hidden" style={{
         background: 'linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)',
+        marginTop: '-26px'
       }}>
       {/* Noise texture */}
       <div
@@ -28,43 +29,21 @@ export function TargetAudienceSection() {
         }}
       />
 
-      <div className="relative z-10 container mx-auto px-6">
-        {/* Green wave decoration at top */}
-        <div className="absolute top-0 left-0 right-0 h-32 overflow-hidden -mt-32">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 1440 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
-            <path d="M0 0 Q360 50 720 20 T1440 0 L1440 120 L0 120 Z" fill="var(--color-secondary)" />
-            <path
-              d="M0 20 Q360 70 720 40 T1440 20 L1440 120 L0 120 Z"
-              fill="var(--color-secondary)"
-              fillOpacity="0.5"
-            />
-            <path
-              d="M0 40 Q360 90 720 60 T1440 40 L1440 120 L0 120 Z"
-              fill="var(--color-secondary)"
-              fillOpacity="0.3"
-            />
-          </svg>
-        </div>
+      <div className="relative container mx-auto px-6">
 
         {/* Two Cards Side by Side */}
         <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Green Card - For You */}
           <div className="relative bg-secondary rounded-3xl p-8 md:p-10 shadow-xl">
-            <h2 className="text-3xl md:text-4xl font-melo text-white mb-8">
+            <h2 className="text-3xl md:text-4xl font-melo font-semibold text-white mb-8">
               Hit Refresh is for you if
             </h2>
 
             <ul className="space-y-6">
               {forYouList.map((item, index) => (
                 <li key={index} className="flex gap-4 items-start">
-                  <div className="shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center mt-1">
-                    <Check className="w-5 h-5 text-secondary" strokeWidth={3} />
+                  <div className="shrink-0 w-8 h-8 flex items-center justify-center mt-1">
+                    <CheckmarkIcon className="w-5 h-5 text-white" />
                   </div>
                   <p className="text-white text-lg leading-relaxed font-sans">{item}</p>
                 </li>
@@ -72,20 +51,22 @@ export function TargetAudienceSection() {
             </ul>
 
             {/* Orange bottom accent stroke */}
-            <div className="absolute bottom-0 left-0 right-0 h-2 overflow-hidden rounded-b-3xl">
+            <div className="absolute -bottom-3 left-0 right-0 h-6 overflow-hidden rounded-b-3xl flex items-center justify-center">
               <svg
-                className="w-full h-8"
-                viewBox="0 0 400 30"
+                className="w-full"
+                width="530"
+                height="22"
+                viewBox="0 0 530 22"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
               >
                 <path
-                  d="M0 15 Q100 5 200 15 T400 15"
-                  stroke="var(--color-primary)"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  fill="none"
+                  d="M2.09351 1.1585C11.528 1.81762 21.0823 2.42693 30.6284 3.15203C46.0165 4.34343 61.3454 4.71622 76.7782 2.76916C85.5197 1.69271 94.4708 2.60895 103.363 2.70658C110.337 2.78655 117.245 2.97827 124.223 3.00035C126.55 2.98841 128.881 2.91858 131.121 2.49328C148.028 -0.572522 164.948 -0.495823 181.807 2.95092C184.044 3.3981 186.662 4.22095 188.629 3.54386C196.963 0.809953 205.489 1.98737 213.954 1.53159C220.845 1.14031 227.798 1.50977 234.772 1.58974C243.548 1.67928 252.366 2.00444 261.151 1.97818C269.993 1.95597 279.056 0.436583 287.69 1.73787C299.255 3.53486 310.625 2.293 322.126 2.5147C333.279 2.71213 344.555 1.98728 355.595 0.489585C363.344 -0.539817 370.198 -0.410028 376.408 5.60887C381.778 2.84243 387.449 2.42413 393.192 3.46534C393.941 3.5758 394.751 3.63241 395.516 3.51129C403.401 2.20051 411.289 0.0172483 419.395 2.21251C425.84 -0.129737 431.507 2.01148 437.023 5.48024C443.839 2.81488 450.581 2.06411 457.505 4.52587C458.865 5.02818 460.53 4.50455 462.097 4.55584C470.452 4.84865 479.012 3.87585 486.416 9.45457C488.018 10.6718 490.589 10.5024 493.107 11.0856C492.591 8.48968 492.191 6.71644 491.803 4.76951C495.328 3.44492 497.935 5.25603 500.376 6.93922C502.487 8.36657 501.518 13.0695 499.093 13.6563C496.845 14.1974 494.517 14.2093 492.228 14.5148C486.119 15.368 479.774 15.4483 473.948 17.252C467.349 19.2926 461.837 18.2676 456.379 14.8029C455.097 14.0151 453.752 13.2812 451.683 12.0895C447.337 13.5312 442.76 15.7712 437.995 16.5437C431.229 17.6418 424.096 19.0052 417.542 17.9074C404.381 15.6498 391.518 16.6128 378.486 18.3204C375.845 18.6595 373.159 18.8209 370.538 18.8705C360.522 19.0434 350.452 19.1544 340.44 19.2694C326.588 19.407 312.735 19.5446 298.937 19.7442C293.522 19.8313 288.148 20.154 282.721 20.4148C277 20.7133 271.429 21.3712 265.524 20.1442C259.619 18.9172 253.204 19.9817 247.025 20.1899C234.665 20.6063 222.339 21.3742 210.058 21.5052C189.976 21.7312 169.922 21.5519 149.86 21.4884C129.394 21.3966 108.972 21.4826 88.5259 21.1013C67.6741 20.6918 46.8304 20.1664 26.0353 18.9463C19.2014 18.5271 12.3771 16.305 5.9082 13.9914C-0.912031 11.7114 -1.30888 9.06566 2.09351 1.1585Z"
+                  fill="#FF8E00"
+                />
+                <path
+                  d="M529.432 11.4709C526.13 12.1129 522.87 12.9905 519.538 13.2231C518.604 13.2742 517.502 11.5682 516.459 10.6809C517.21 9.91887 517.82 8.68158 518.646 8.50661C522.349 7.95083 526.066 8.03594 529.432 11.4709Z"
+                  fill="#FF8E00"
                 />
               </svg>
             </div>
@@ -93,15 +74,15 @@ export function TargetAudienceSection() {
 
           {/* Black Card - Not For You */}
           <div className="relative bg-black rounded-3xl p-8 md:p-10 shadow-xl">
-            <h2 className="text-3xl md:text-4xl font-melo text-white mb-8">
+            <h2 className="text-3xl md:text-4xl font-melo font-semibold text-white mb-8">
               Hit Refresh is not for you if
             </h2>
 
             <ul className="space-y-6">
               {notForYouList.map((item, index) => (
                 <li key={index} className="flex gap-4 items-start">
-                  <div className="flex-shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center mt-1">
-                    <X className="w-5 h-5 text-black" strokeWidth={3} />
+                  <div className="shrink-0 w-8 h-8 flex items-center justify-center mt-1">
+                    <XIcon className="w-5 h-5 text-white" />
                   </div>
                   <p className="text-white text-lg leading-relaxed font-sans">{item}</p>
                 </li>
@@ -109,29 +90,18 @@ export function TargetAudienceSection() {
             </ul>
 
             {/* Orange bottom brushstroke decoration */}
-            <div className="absolute bottom-0 left-0 right-0 h-16 overflow-hidden rounded-b-3xl">
+            <div className="absolute -bottom-6 left-0 right-0 h-16 overflow-hidden rounded-b-3xl flex items-center justify-center">
               <svg
-                className="w-full h-full"
-                viewBox="0 0 400 60"
-                fill="none"
+                className="w-full"
                 xmlns="http://www.w3.org/2000/svg"
-                preserveAspectRatio="none"
+                width="410"
+                height="72"
+                fill="none"
+                viewBox="0 0 410 72"
               >
                 <path
-                  d="M0 30 Q50 10 100 30 T200 30 T300 30 T400 30"
-                  stroke="var(--color-primary)"
-                  strokeWidth="20"
-                  strokeLinecap="round"
-                  fill="none"
-                  opacity="0.8"
-                />
-                <path
-                  d="M0 40 Q50 20 100 40 T200 40 T300 40 T400 40"
-                  stroke="var(--color-primary)"
-                  strokeWidth="15"
-                  strokeLinecap="round"
-                  fill="none"
-                  opacity="0.6"
+                  fill="#ff8e00"
+                  d="M410 20.3q-1.6 1.8-2.5 3.3c-1.4 3.3-3.9 4-7.1 3.7l-8.8-.2c-2.5 0-4.9-.3-6.6-2.5q-1.7-1.9-4.3-1.4l-4 .2c-3.5.4-6.8-.1-9-2.4L356 22.2l-3.1 2.6-3.6 2.5c2.3 2 4.9.8 7 2 .8-3.8 1.7-4.7 3.5-3.8.7.4 1.6 1.5 1.4 2-1 2.4.7 3.4 2.2 4.2a5 5 0 0 0 5.6-.2c2.9-2 3.2-2 4.9-.2l2 2.5c6-1 6.6-.9 10.3 3.2q-3-.3-5.3-.3c-1.6.2-3.2 1.2-4.6 1-5.9-1.2-11.6.9-17.4.3-4.7-.5-9.4-.9-13.2-4.7-3.3.4-6.6 1.5-10.3 1.2-4.7-.3-9.2 1.9-12.4 5.9-1.3 1.7-1.3 2.8 0 5.4l1 1.8-6.8 3.4-.8-2.7c-3.3 2-3.3 2-7.8 2.4q-2.9.3-5.5 2.2c-3.3 2.5-7 4.9-11.6 3.8-2-3 1.6-4.2 2-6.5-.6-1.7-2.1-2.5-3.7-1.8q-3.5 1.3-7.2 0c-5.5-1.5-11.4-1.7-17-3.1-5.3-1.2-10.9-.1-14.2 5.4q-.6 1-1.9 2c-4-1.8-4.2-5.5-4.7-9.2-.8-.4-1.5-1.2-2.3-1.2l-16-1q-2.5 0-3.9 2.3-1.3 2.4.6 4.4l.4 1.2c-6.4 2.8-6.4 2.7-13.3 2.7-1.9 0-3.8 1.2-5.7 1.2-1.7 0-2.6.4-4 1.7A25 25 0 0 1 194 59q-4.5 2.1-9.1 4c-1-3.2-1-4.1.6-5.7q2.3-2 4.8-3.7 4.5-3.5-.8-6a22 22 0 0 0-10.3-2.5q-6 0-12.1-.6-2.4-.3-4.5.7l-7.2 3.4c-1 2 .4 3.5.5 5.2.2 1.7-.4 3.4-.6 5 1.9 1.5 3-.5 4.4-.6q1.3.1 2.1 1.2c.6 1-.1 2.3-1.3 2.6q-4.2 1.2-7.7-1c-2.3-1.5-4.4-1.5-7-1.2-4.2.4-8.6.5-12.1-2.7a6 6 0 0 0-3.1-1.1c-5.2-.7-10.2-2-15.4-1.5-3 .3-6-.8-9.3-.4-5.1.6-9.4 3-13.7 5.3q-6 3-12.4 4.5c-1.4-2.3-1.4-3 0-3.8q1.1-.6 2.4-1c3.3-.2 4.6-2.2 4.8-5.6-5-2.5-9.7-4.1-15.4-2.5q-3.6 1-6.5 3.3c-1.1 1-2.2 2.4-3.6 3a64 64 0 0 0-11.4 7.1c-1.8 1.5-4 2-6.3.6-.9-2.1-.3-4.4 1.7-5.1 3.6-1.4 5.3-5.7 9.5-6 .5 0 1-.8 1.5-1.3 1-1.2.8-2.9-.4-3.6-1.4-.7-2.8-1.6-4.3-1.8q-5.3-.6-10.7-.5c-1.4 0-2.8 1.2-4.1 2l-9 6q-7.3 4.7-14.4 9.6Q7.4 69 .4 72c-1-1.3 0-1.6.7-2.2L4 67.1q1.6-2.3 3.4-4.1 7.4-6.4 15-12.4c2.2-1.7 2.7-4 4.2-6.4q-2.4-1.2-4-1.8l-5.2-1.5a9 9 0 0 1-6.6-6.9l-1.2-4.8c1.4-1.4 2.4-.9 3.5-.4A62 62 0 0 0 39.4 33c3.3 0 6.1-.8 8.3-3.6q3.9-5 10.6-5.4c1.4-2 2.6-4.5 5.8-5 3-.4 5.1-2.6 7-5 1-1.3 2-2.5 3.8-2.1 2 .4 4 2.8 4.1 4.8l-.3 5.9 4.9-2.3 5 2.8c3-2 6-3.2 9.5-2.7a12 12 0 0 0 10.3-4.1l4-3.8 4.4 3.2q3.2 1.9 4.8 5.4c2.1 4.5 3 4.8 7.9 4.4h9.4l4-6c6 .7 11.5-.4 15.4-5.3 3.6 2.1 3.6 2.1 4.3 8.8-1.5 2.1-4.7 2.5-5.8 5.8 6.8 2.5 12.6-1.2 18.4-1.8 1.7-2 2-4 2.3-6q.8-4.9 5-4.4c3.8.4 7.4.2 11-1.5 2-.8 4-.2 5.9.8q2.6 1.7 5.3 3c2.4 1.2 4.8 2.5 7.4 3q7 1.4 14 2.4c1 .1 2.4.3 3.2-.2 4.4-2.7 9.7-3.8 12.9-8.3 1.2-1.7 2.4-3.3 4.6-3.6 4.8 4 4.8 4 7.3 8.8l-2.8 6c1 2.4 2.7 2.1 4.2 2.2h9.2c2.6-6 2.6-6 8.5-9.9a8 8 0 0 0 3.5-4.6c.9-3 3.8-5 6.6-4.4 7.7 1.5 14-2 20.2-5.6 1.8-1 3.4-2.2 6-2 2.2 1.9 4.3 4 4.3 7.6q.1 3 2.6 4.5l4.3 3.6h11c.5-.4 1.1-1.5 2-2 5.1-2.3 7.5-6.1 6.3-12.2 5.1 1.5 9.3-1 13.7-1.2s8.7-1.7 14.4-3c.6 0 0 4.4 3.1 2.8.4-.2 1.9 1.2 2.2 2.1q1 3.4 1.9 7.6l6.2 3.4L385 12q1 .4 1.2.7c.7 2.3 1.5 4.3 4.5 4 2.2-.1 2.3 1.8 2.7 3.3 1.2.6 1.4-.6 2-1.2q2.5-2.9 6-1.5zm-131.9 16c2.8 0 4.5-.4 5.8.2 2.7 1.3 5.5 1.4 8.3 1.8 1.5.2 3.2.2 4.5.9 3 1.5 5.7.3 8.3-1q3-1.8 6-4.2 2.1-1.7.6-4.1-1.2-1.5-2.6-2.7c-4.8 2.1-4.8 2.1-12.7-1.4q-3 1-6.4 1.8c-3.6.7-6.6 2.6-9.6 4.6-.9.5-1.1 2-2.2 4.2M150.7 41c-1.2-.7-2.1-1.8-3-1.7-2.9.4-5.6-.5-8.5-1q-2-.4-4-.3-6.7.8-10.3 6.5c.8 2.8-2.1 2.8-3.2 4.2 1 2 2.6 1.6 4 1.1.9-.2 1.4-1.2 2-1.7 2-1.4 3-1.2 4.2 1 .9 2 2 2.7 4.2 2.6v-2c-.2-.9-.8-1.7.7-2.4l6.1 2.1zm-80.8-2.8 10.6-3.4c1.2-.4 1.4-2.5.3-3.4s-2.1-1.8-3.3-1.9q-4-.2-8 .1-5.4.6-10 3.4c-.6.4-1.3 1.6-1.2 2.1q.6 1.5 1.9 2.5c.2.3.9.4 1.2.3q4.2-1.6 8.5.3m21.5 2.4c4 2.5 7.8 2.6 11.4 1.5a21 21 0 0 1 7.8-1.2c1.9.1 3-1.2 3-2.8 0-1.8-1-3.3-2.4-3.5-7.3-1-14.3-.8-19.8 6M186 38c4.4 2 4.4 2 8.4 2 .7 0 1.6-.2 2 .2 2.3 2.9 5.4-1 8 .9 0 0 1-.8 1.1-1.3q.7-2.3-1.3-3.4a28 28 0 0 0-14.4-2.2q-3 .2-3.8 3.8m130.8-4c.3-2 1-4.3-2-3.7l.5 1.9 1.5 1.9M402.6 21l-1.6 1.8c0 .2.7 1 1.2 1.1 1.3.1 2.5-.9 2.1-1.6q-.6-.6-1.7-1.3m-125.8 1.1 1.6.6.3-.5-1.6-.9q0 .3-.3.8M241 25.7V25h-.5v.5z"
                 />
               </svg>
             </div>
