@@ -33,7 +33,7 @@ export function Footer() {
               {/* Social Media Icons */}
               <div className="flex gap-4">
                 <Link
-                  href="https://facebook.com"
+                  href="https://facebook.com/balanceunleashed"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary-hover transition-colors"
@@ -41,7 +41,7 @@ export function Footer() {
                   <Facebook className="w-6 h-6 text-white" />
                 </Link>
                 <Link
-                  href="https://instagram.com"
+                  href="https://instagram.com/balanceunleashed"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary-hover transition-colors"
@@ -49,7 +49,7 @@ export function Footer() {
                   <Instagram className="w-6 h-6 text-white" />
                 </Link>
                 <Link
-                  href="https://twitter.com"
+                  href="https://twitter.com/balanceunleashd"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary-hover transition-colors"
@@ -57,7 +57,7 @@ export function Footer() {
                   <Twitter className="w-6 h-6 text-white" />
                 </Link>
                 <Link
-                  href="https://linkedin.com"
+                  href="https://linkedin.com/company/balanceunleashed"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary-hover transition-colors"

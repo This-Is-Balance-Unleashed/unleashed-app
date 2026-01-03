@@ -112,7 +112,7 @@ export default async function Image() {
               fontFamily: 'monospace',
             }}
           >
-            26th February 2026 | LAGOS, NIGERIA
+            28th February 2026 | LAGOS, NIGERIA
           </div>
         </div>
 

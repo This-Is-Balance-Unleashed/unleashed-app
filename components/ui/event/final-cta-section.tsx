@@ -94,7 +94,7 @@ export function FinalCTASection() {
 
               {/* CTA Button */}
               <div className="pt-4">
-                <Button variant="primary" size="lg">
+                <Button variant="primary" size="lg" href="/tickets">
                   Get Your Ticket
                 </Button>
               </div>

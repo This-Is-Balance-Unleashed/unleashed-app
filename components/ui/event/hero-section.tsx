@@ -99,7 +99,7 @@ export function HeroSection() {
             </p>
 
             {/* CTA Button */}
-            <Button variant="primary" size="lg">
+            <Button variant="primary" size="lg" href="/tickets">
               Get Your Ticket
             </Button>
           </div>
