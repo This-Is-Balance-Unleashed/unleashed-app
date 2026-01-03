@@ -134,7 +134,7 @@ export function RightSwooshIcon({ className = '' }: IconProps) {
   );
 }
 
-export function CheckmarkIcon({ className = '', strokeWidth }: IconProps) {
+export function CheckmarkIcon({ className = '' }: IconProps) {
   return (
     <svg
       width="24"
@@ -152,7 +152,7 @@ export function CheckmarkIcon({ className = '', strokeWidth }: IconProps) {
   );
 }
 
-export function XIcon({ className = '', strokeWidth }: IconProps) {
+export function XIcon({ className = '' }: IconProps) {
   return (
     <svg
       width="19"

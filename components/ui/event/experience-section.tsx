@@ -99,7 +99,7 @@ export function ExperienceSection() {
 
             {/* CTA Button */}
             <div className="pt-8">
-              <Button variant="primary" size="lg">
+              <Button variant="primary" size="lg" href="/tickets">
                 Get Your Ticket
               </Button>
             </div>

@@ -124,7 +124,7 @@ export function PricingSection() {
       type: 'teams' as const,
       title: 'Corporate Refresh',
       label: 'Teams',
-      description: 'Perfect for companies investing in staff wellness and productivity.',
+      description: '5–8 General Admission tickets + Reserved team seating area += Post-summit "Career Wellness Audit" report',
       price: '₦70,000',
       ticketTypeId: '00000000-0000-0000-0001-000000000003',
     },
@@ -189,7 +189,7 @@ export function PricingSection() {
 
         {/* CTA Button */}
         <div className="text-center">
-          <Button variant="primary" size="lg">
+          <Button variant="primary" size="lg" href="/tickets">
             Get Your Ticket
           </Button>
         </div>

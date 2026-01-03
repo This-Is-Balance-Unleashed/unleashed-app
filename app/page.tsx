@@ -5,10 +5,12 @@ import { TargetAudienceSection } from '@/components/ui/event/target-audience-sec
 import { PricingSection } from '@/components/ui/event/pricing-section';
 import { FinalCTASection } from '@/components/ui/event/final-cta-section';
 import { Footer } from '@/components/ui/event/footer';
+import { EventSchema } from '@/components/seo/EventSchema';
 
 export default function Home() {
   return (
     <main className="relative">
+      <EventSchema />
       <HeroSection />
       <ValuePropositionSection />
       <ExperienceSection />
