@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
+import { sendTicketConfirmationEmail } from '@/lib/mailerlite';
 
 export async function POST(request: Request) {
   try {
@@ -87,6 +88,50 @@ export async function POST(request: Request) {
 
         if (ticketTypeError) {
           // Don't throw - ticket is already created
+        }
+      }
+
+      // 9. Send confirmation email with ticket links
+      if (reservedTickets && reservedTickets.length > 0) {
+        try {
+          // Fetch event and ticket type details for email
+          const { data: eventData } = await supabaseAdmin
+            .from('events')
+            .select('title')
+            .eq('id', metadata.event_id)
+            .single();
+
+          const { data: ticketTypeData } = await supabaseAdmin
+            .from('ticket_types')
+            .select('name')
+            .eq('id', metadata.ticket_type_id)
+            .single();
+
+          // Get the base URL from environment or construct it
+          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://hit-refresh.balanceunleashed.org';
+
+          // Build ticket info array with URLs
+          const ticketInfo = reservedTickets.map((ticket, index) => ({
+            id: ticket.id,
+            ticketNumber: index + 1,
+            ticketUrl: `${baseUrl}/tickets/${ticket.id}`,
+          }));
+
+          // Get customer name from the first ticket
+          const customerName = reservedTickets[0].name || customer.email.split('@')[0];
+
+          await sendTicketConfirmationEmail({
+            to: customer.email,
+            customerName,
+            eventTitle: eventData?.title || 'Hit Refresh Summit',
+            ticketTypeName: ticketTypeData?.name || 'General Admission',
+            tickets: ticketInfo,
+            totalAmount: amount,
+            reference: reference.split('-')[0], // Remove ticket number suffix
+          });
+        } catch (emailError) {
+          // Don't throw - ticket is already created, just log email failure
+          // In production, you might want to queue this for retry
         }
       }
     }
