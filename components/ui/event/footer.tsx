@@ -74,10 +74,10 @@ export function Footer() {
               <div className="space-y-2">
                 <p className="text-base font-sans">Have any questions, reach out to us at</p>
                 <Link
-                  href="mailto:balanceunleashed@gmail.com"
+                  href="mailto:events@balanceunleashed.org"
                   className="text-base font-medium font-sans hover:text-primary transition-colors"
                 >
-                  balanceunleashed@gmail.com
+                  events@balanceunleashed.org
                 </Link>
               </div>
             </div>

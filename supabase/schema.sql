@@ -92,11 +92,11 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to increment ticket type sold quantity atomically
-CREATE OR REPLACE FUNCTION increment_ticket_sold(ticket_type_uuid UUID)
+CREATE OR REPLACE FUNCTION increment_ticket_sold(ticket_type_uuid UUID, increment_by INTEGER DEFAULT 1)
 RETURNS void AS $$
 BEGIN
   UPDATE ticket_types
-  SET sold_quantity = sold_quantity + 1
+  SET sold_quantity = sold_quantity + increment_by
   WHERE id = ticket_type_uuid;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

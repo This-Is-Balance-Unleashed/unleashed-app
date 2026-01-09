@@ -10,7 +10,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:webhook": "bun run scripts/test-webhook.ts",
+    "webhook:capture": "bun run scripts/capture-webhook.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

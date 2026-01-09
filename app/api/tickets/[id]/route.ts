@@ -30,7 +30,6 @@ export async function GET(
       .single();
 
     if (error) {
-      console.error('Ticket type fetch error:', error);
       return NextResponse.json({ error: 'Ticket type not found' }, { status: 404 });
     }
 
@@ -47,7 +46,6 @@ export async function GET(
       event: ticketType.events,
     });
   } catch (error) {
-    console.error('Ticket type fetch error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

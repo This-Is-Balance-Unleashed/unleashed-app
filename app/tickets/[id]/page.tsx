@@ -103,13 +103,22 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
     }
   };
 
+  // Extract base reference (remove ticket number suffix)
+  const getBaseReference = (fullReference: string) => {
+    // Format: test_1767969715419_gz0mzp-1 -> test_1767969715419_gz0mzp
+    return fullReference.split('-')[0];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <Link href="/" className="text-primary hover:underline text-sm">
-            ← Back to Events
+          <Link 
+            href={`/tickets/success?reference=${getBaseReference(data.paystack_reference)}`} 
+            className="text-primary hover:underline text-sm"
+          >
+            ← Back to Purchase Summary
           </Link>
         </div>
 

@@ -6,13 +6,13 @@ import Link from 'next/link';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import useSWR from 'swr';
 
-interface TicketType {
-  id: string;
-  name: string;
-  description: string;
-  price_in_kobo: number;
-  event_id: string;
-}
+// interface TicketType {
+//   id: string;
+//   name: string;
+//   description: string;
+//   price_in_kobo: number;
+//   event_id: string;
+// }
 
 interface Event {
   id: string;
@@ -163,7 +163,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
       }
     } else {
       // Payment step - call purchase API
-      const { total } = calculatePrices();
+      calculatePrices();
 
       try {
         const response = await fetch('/api/tickets/purchase', {
@@ -171,8 +171,11 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: formData.email,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
             event_id: event?.id,
             ticket_type_id: ticketType?.id,
+            quantity: formData.quantity,
             coupon_code: formData.couponCode || undefined,
           }),
         });
@@ -186,7 +189,6 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
           alert(data.error || 'Failed to initialize payment');
         }
       } catch (error) {
-        console.error('Purchase error:', error);
         alert('An error occurred. Please try again.');
       }
     }
@@ -218,7 +220,6 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         setCouponDiscount(null);
       }
     } catch (error) {
-      console.error('Coupon check error:', error);
       alert('Failed to apply coupon');
     }
   };
@@ -511,7 +512,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
 
                     <div className="mt-4 bg-gray-50 p-4 rounded flex items-start space-x-3">
                       <svg
-                        className="w-6 h-6 text-gray-600 flex-shrink-0 mt-0.5"
+                        className="w-6 h-6 text-gray-600 shrink-0 mt-0.5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

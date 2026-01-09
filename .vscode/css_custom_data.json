@@ -1,0 +1,31 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 theme configuration directive. Defines custom design tokens inline.",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Documentation",
+          "url": "https://tailwindcss.com/docs/v4-beta"
+        }
+      ]
+    },
+    {
+      "name": "@import",
+      "description": "Tailwind CSS import directive for importing utilities and other CSS files."
+    },
+    {
+      "name": "@layer",
+      "description": "Tailwind CSS layer directive for organizing custom styles into base, components, or utilities layers."
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS apply directive for applying utility classes within custom CSS."
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS v4 config directive for specifying configuration file path."
+    }
+  ]
+}

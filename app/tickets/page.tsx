@@ -91,7 +91,7 @@ const ticketTypes: TicketType[] = [
 
 export default function TicketsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       {/* Header */}
       <div className="bg-black text-white py-16 md:py-24">
         <div className="container mx-auto px-6">
@@ -152,7 +152,7 @@ export default function TicketsPage() {
             Not sure which ticket is right for you? Our team is here to help!
           </p>
           <a
-            href="mailto:tickets@unleashed.conference"
+            href="mailto:events@balanceunleashed.org"
             className="inline-block bg-primary text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity"
           >
             Contact Us
@@ -232,7 +232,7 @@ function TicketCard({ ticket }: { ticket: TicketType }) {
               {ticket.features.map((feature, index) => (
                 <li key={index} className="flex items-start gap-2">
                   <svg
-                    className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                    className={`w-5 h-5 shrink-0 mt-0.5 ${
                       ticket.color === 'black' || ticket.color === 'teal'
                         ? 'text-green-400'
                         : 'text-green-600'

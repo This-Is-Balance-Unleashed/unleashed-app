@@ -7,18 +7,28 @@ import Link from 'next/link';
 interface TicketDetails {
   id: string;
   email: string;
+  name: string;
   event_title: string;
   ticket_type_name: string;
   amount_paid: number;
+  qr_code_url: string | null;
   payment_reference: string;
   created_at: string;
+}
+
+interface VerifyResponse {
+  success: boolean;
+  tickets_count: number;
+  total_amount_paid: number;
+  tickets: TicketDetails[];
+  ticket: TicketDetails; // For backwards compatibility
 }
 
 function TicketSuccessContent() {
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference') || searchParams.get('trxref');
 
-  const [ticketDetails, setTicketDetails] = useState<TicketDetails | null>(null);
+  const [ticketsData, setTicketsData] = useState<VerifyResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,15 +43,14 @@ function TicketSuccessContent() {
     const verifyPayment = async () => {
       try {
         const response = await fetch(`/api/tickets/verify?reference=${reference}`);
-        const data = await response.json();
+        const data: VerifyResponse = await response.json();
 
         if (response.ok && data.success) {
-          setTicketDetails(data.ticket);
+          setTicketsData(data);
         } else {
           setError(data.error || 'Failed to verify payment');
         }
       } catch (err) {
-        console.error('Verification error:', err);
         setError('Failed to verify payment. Please contact support.');
       } finally {
         setLoading(false);
@@ -62,7 +71,7 @@ function TicketSuccessContent() {
     );
   }
 
-  if (error || !ticketDetails) {
+  if (error || !ticketsData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-8 text-center">
@@ -122,26 +131,36 @@ function TicketSuccessContent() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2 font-melo">
             Payment Successful! 🎉
           </h1>
-          <p className="text-lg text-gray-600">Your ticket has been confirmed</p>
+          <p className="text-lg text-gray-600">
+            {ticketsData.tickets_count === 1 
+              ? 'Your ticket has been confirmed'
+              : `Your ${ticketsData.tickets_count} tickets have been confirmed`
+            }
+          </p>
         </div>
 
-        {/* Ticket Details Card */}
+        {/* Summary Card */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <div className="bg-primary text-white px-6 py-4">
-            <h2 className="text-xl font-bold">{ticketDetails.event_title}</h2>
-            <p className="text-sm opacity-90">{ticketDetails.ticket_type_name}</p>
+            <h2 className="text-xl font-bold">{ticketsData.tickets[0].event_title}</h2>
+            <p className="text-sm opacity-90">{ticketsData.tickets[0].ticket_type_name}</p>
           </div>
 
           <div className="p-6 space-y-4">
             <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-              <span className="text-gray-600">Email</span>
-              <span className="font-semibold text-gray-900">{ticketDetails.email}</span>
+              <span className="text-gray-600">Number of Tickets</span>
+              <span className="font-semibold text-gray-900 text-2xl">{ticketsData.tickets_count}</span>
             </div>
 
             <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-              <span className="text-gray-600">Amount Paid</span>
+              <span className="text-gray-600">Email</span>
+              <span className="font-semibold text-gray-900">{ticketsData.tickets[0].email}</span>
+            </div>
+
+            <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+              <span className="text-gray-600">Total Amount Paid</span>
               <span className="font-semibold text-gray-900">
-                ₦{(ticketDetails.amount_paid / 100).toLocaleString('en-NG', {
+                ₦{(ticketsData.total_amount_paid / 100).toLocaleString('en-NG', {
                   minimumFractionDigits: 2,
                 })}
               </span>
@@ -150,14 +169,14 @@ function TicketSuccessContent() {
             <div className="flex justify-between items-center pb-4 border-b border-gray-200">
               <span className="text-gray-600">Reference</span>
               <span className="font-mono text-sm text-gray-900">
-                {ticketDetails.payment_reference}
+                {ticketsData.tickets[0].payment_reference.split('-')[0]}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Purchase Date</span>
               <span className="font-semibold text-gray-900">
-                {new Date(ticketDetails.created_at).toLocaleDateString('en-GB', {
+                {new Date(ticketsData.tickets[0].created_at).toLocaleDateString('en-GB', {
                   day: '2-digit',
                   month: 'short',
                   year: 'numeric',
@@ -168,6 +187,38 @@ function TicketSuccessContent() {
             </div>
           </div>
         </div>
+
+        {/* Individual Tickets */}
+        {ticketsData.tickets_count > 1 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Your Tickets</h3>
+            <div className="grid gap-4">
+              {ticketsData.tickets.map((ticket, index) => (
+                <div key={ticket.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="font-semibold text-gray-900">Ticket #{index + 1}</span>
+                    <Link
+                      href={`/tickets/${ticket.id}`}
+                      className="text-primary hover:underline text-sm font-medium"
+                    >
+                      View Details →
+                    </Link>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Amount</span>
+                      <span className="font-medium">₦{(ticket.amount_paid / 100).toLocaleString('en-NG')}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Reference</span>
+                      <span className="font-mono text-xs">{ticket.payment_reference}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Info Box */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -188,8 +239,8 @@ function TicketSuccessContent() {
             <div className="text-sm text-blue-900">
               <p className="font-semibold mb-1">Check Your Email</p>
               <p>
-                Your ticket confirmation and QR code have been sent to{' '}
-                <span className="font-semibold">{ticketDetails.email}</span>. Please check your
+                Your ticket{ticketsData.tickets_count > 1 ? 's' : ''} confirmation and QR code{ticketsData.tickets_count > 1 ? 's' : ''} have been sent to{' '}
+                <span className="font-semibold">{ticketsData.tickets[0].email}</span>. Please check your
                 inbox (and spam folder).
               </p>
             </div>
@@ -198,12 +249,39 @@ function TicketSuccessContent() {
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <Link
-            href={`/tickets/${ticketDetails.id}`}
-            className="block w-full bg-primary text-white text-center py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
-          >
-            View Ticket & QR Code
-          </Link>
+          {ticketsData.tickets_count === 1 ? (
+            <Link
+              href={`/tickets/${ticketsData.tickets[0].id}`}
+              className="block w-full bg-primary text-white text-center py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+            >
+              View Ticket & QR Code
+            </Link>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  // Open all tickets in new tabs immediately (must be synchronous to avoid popup blocking)
+                  ticketsData.tickets.forEach((ticket) => {
+                    window.open(`/tickets/${ticket.id}`, '_blank');
+                  });
+                }}
+                className="block w-full bg-primary text-white text-center py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+              >
+                View All {ticketsData.tickets_count} Tickets
+              </button>
+              <div className="grid grid-cols-2 gap-3">
+                {ticketsData.tickets.map((ticket, index) => (
+                  <Link
+                    key={ticket.id}
+                    href={`/tickets/${ticket.id}`}
+                    className="block w-full border-2 border-primary text-primary text-center py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors"
+                  >
+                    View Ticket #{index + 1}
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
           <Link
             href="/"
             className="block w-full border-2 border-gray-300 text-gray-700 text-center py-4 rounded-lg font-semibold text-lg hover:bg-gray-50 transition-colors"

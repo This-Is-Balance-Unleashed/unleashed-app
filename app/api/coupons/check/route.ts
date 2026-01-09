@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { code, event_id, ticket_type_id } = body;
+    const { code, ticket_type_id } = body;
 
     if (!code) {
       return NextResponse.json(
@@ -86,7 +86,6 @@ export async function POST(request: NextRequest) {
       coupon_id: coupon.id,
     });
   } catch (error) {
-    console.error('Coupon check error:', error);
     return NextResponse.json(
       { error: 'Invalid request' },
       { status: 400 }

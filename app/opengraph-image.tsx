@@ -138,7 +138,7 @@ export default async function Image() {
             {/* Generate checkered pattern blocks */}
             {Array.from({ length: 8 }).map((_, row) =>
               Array.from({ length: 6 }).map((_, col) => {
-                const index = row * 6 + col;
+                // const index = row * 6 + col;
                 const isPurple = (row + col) % 3 === 0;
                 const isTeal = (row + col) % 3 === 1;
                 const isDotted = (row + col) % 2 === 0;

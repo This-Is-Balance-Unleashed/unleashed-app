@@ -1,6 +1,7 @@
-import { ButtonHTMLAttributes, AnchorHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
+import type { Route } from 'next';
 
 type ButtonBaseProps = {
   variant?: 'primary' | 'secondary' | 'outline';
@@ -14,10 +15,9 @@ type ButtonAsButton = ButtonBaseProps &
     href?: never;
   };
 
-type ButtonAsLink = ButtonBaseProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof ButtonBaseProps> & {
-    href: string;
-  };
+type ButtonAsLink = ButtonBaseProps & {
+  href: Route | string;
+};
 
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
@@ -40,9 +40,8 @@ export function Button({ children, variant = 'primary', size = 'md', className, 
   );
 
   if ('href' in props && props.href) {
-    const { href, ...linkProps } = props;
     return (
-      <Link href={href} className={classes} {...linkProps}>
+      <Link href={props.href as Route} className={classes}>
         {children}
       </Link>
     );

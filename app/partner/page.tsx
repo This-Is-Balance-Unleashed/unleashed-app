@@ -28,7 +28,6 @@ export default function PartnerPage() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setSubmitted(true);
     } catch (error) {
-      console.error('Submission error:', error);
       alert('Failed to submit. Please try again.');
     } finally {
       setLoading(false);
