@@ -189,6 +189,35 @@ CREATE POLICY "Organizers can manage coupons for own events"
     )
   );
 
+-- Partnership Inquiries table
+CREATE TABLE IF NOT EXISTS partnership_inquiries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  company_name TEXT NOT NULL,
+  contact_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  website TEXT,
+  partnership_type TEXT CHECK (partnership_type IN ('platinum', 'gold', 'silver', 'bronze', 'custom')) NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT CHECK (status IN ('pending', 'contacted', 'in_progress', 'confirmed', 'declined')) DEFAULT 'pending',
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index for partnership inquiries
+CREATE INDEX IF NOT EXISTS idx_partnership_inquiries_email ON partnership_inquiries(email);
+CREATE INDEX IF NOT EXISTS idx_partnership_inquiries_status ON partnership_inquiries(status);
+
+-- Trigger to auto-update updated_at on partnership_inquiries table
+CREATE TRIGGER update_partnership_inquiries_updated_at
+  BEFORE UPDATE ON partnership_inquiries
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable RLS on partnership_inquiries
+ALTER TABLE partnership_inquiries ENABLE ROW LEVEL SECURITY;
+
 -- Service role has full access (for API routes and webhooks)
 CREATE POLICY "Service role has full access to events"
   ON events FOR ALL
@@ -204,4 +233,8 @@ CREATE POLICY "Service role has full access to coupons"
 
 CREATE POLICY "Service role has full access to tickets"
   ON tickets FOR ALL
+  USING (auth.role() = 'service_role');
+
+CREATE POLICY "Service role has full access to partnership_inquiries"
+  ON partnership_inquiries FOR ALL
   USING (auth.role() = 'service_role');
