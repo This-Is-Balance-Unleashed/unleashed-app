@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+const FLUTTERWAVE_DONATION_URL = 'https://flutterwave.com/donate/vwjkrhdeesdy';
+
 export default function PartnerPage() {
   const [formData, setFormData] = useState({
     companyName: '',
@@ -11,7 +13,6 @@ export default function PartnerPage() {
     phone: '',
     website: '',
     partnershipType: '',
-    budget: '',
     message: '',
   });
 
@@ -22,11 +23,22 @@ export default function PartnerPage() {
     e.preventDefault();
     setLoading(true);
 
-    // TODO: Send to API endpoint
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setSubmitted(true);
+      const response = await fetch('/api/partnership', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        alert(data.error || 'Failed to submit. Please try again.');
+      }
     } catch (error) {
       alert('Failed to submit. Please try again.');
     } finally {
@@ -36,11 +48,11 @@ export default function PartnerPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-16 px-4">
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-16 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
             <svg
-              className="w-12 h-12 text-blue-600"
+              className="w-12 h-12 text-green-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -54,7 +66,7 @@ export default function PartnerPage() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4 font-melo">
-            Partnership Request Received! 🤝
+            Partnership Request Received!
           </h1>
           <p className="text-lg text-gray-600 mb-8">
             Thank you for your interest in partnering with us. Our partnerships team will review your
@@ -72,308 +84,419 @@ export default function PartnerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <Link href="/" className="text-primary hover:underline text-sm">
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-green-600 to-green-500 text-white py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <Link href="/" className="text-white/80 hover:text-white text-sm mb-6 inline-block">
             ← Back to Home
           </Link>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 font-melo">Partner With Us</h1>
+          <p className="text-xl opacity-90 max-w-2xl">
+            Join Hit Refresh 2026 in empowering 1,000+ professionals through career growth, financial wellness, and sustainable success.
+          </p>
+          <div className="mt-6">
+            <a
+              href={FLUTTERWAVE_DONATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Donate or Sponsor a Ticket
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto py-12 px-4">
+        {/* Why Partner Section */}
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 font-melo">Why Partner With Hit Refresh?</h2>
+          <p className="text-gray-600 mb-6">
+            Hit Refresh 2026 brings together 1,000+ ambitious young professionals who are actively thinking about
+            career growth and financial security. This summit provides a trusted, education-led environment to
+            connect with future high-value customers and position your brand as a long-term partner in their success.
+          </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-gray-700">Drive product/service adoption among young professionals</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-gray-700">Position your brand as a gateway for first-time users</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-gray-700">Build trust through education, not hard selling</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-gray-700">Convert awareness into immediate action and long-term loyalty</p>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {/* Hero Section */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-12">
-            <h1 className="text-4xl font-bold mb-4 font-melo">Become a Partner</h1>
-            <p className="text-lg opacity-90">
-              Join us in empowering professionals through career growth and wellness
-            </p>
-          </div>
-
-          {/* Partnership Benefits */}
-          <div className="p-8 border-b border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Partnership Benefits</h3>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Brand Visibility</h4>
-                  <p className="text-gray-600">
-                    Prominent logo placement, booth space, and mentions across all event materials
-                  </p>
-                </div>
+        {/* Sponsorship Packages */}
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 font-melo">Sponsorship Packages</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Platinum */}
+            <div className="bg-gradient-to-b from-gray-900 to-gray-800 text-white p-6 rounded-xl relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-xs font-bold">
+                PLATINUM
               </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Talent Access</h4>
-                  <p className="text-gray-600">
-                    Direct access to 500+ motivated professionals for recruitment and networking
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Marketing Reach</h4>
-                  <p className="text-gray-600">
-                    Social media exposure to 50K+ followers and email list of 10K+ subscribers
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Speaking Opportunities</h4>
-                  <p className="text-gray-600">
-                    Platform to showcase your expertise through workshops or panel discussions
-                  </p>
-                </div>
+              <div className="mt-4">
+                <p className="text-3xl font-bold mb-4">₦7.5M</p>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    Opening keynote + panel speaking slot
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    5 VIP passes
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    Premium brand visibility across all channels
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    Full page ad in post-event workbook
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    Prime exhibition booth
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    Post-event insights & attendee data opt-ins
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    PR Coverage Feature
+                  </li>
+                </ul>
               </div>
             </div>
-          </div>
 
-          {/* Partnership Tiers */}
-          <div className="p-8 border-b border-gray-200 bg-gray-50">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Partnership Tiers</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Bronze</h4>
-                <p className="text-3xl font-bold text-primary mb-4">₦500K</p>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>✓ Logo on website</li>
-                  <li>✓ Social media mentions</li>
-                  <li>✓ 2 event tickets</li>
-                  <li>✓ Event swag inclusion</li>
+            {/* Gold */}
+            <div className="bg-gradient-to-b from-yellow-600 to-yellow-700 text-white p-6 rounded-xl relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-yellow-900 px-4 py-1 rounded-full text-xs font-bold">
+                GOLD
+              </div>
+              <div className="mt-4">
+                <p className="text-3xl font-bold mb-4">₦5M</p>
+                <ul className="space-y-2 text-sm text-yellow-100">
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    One high-visibility panel speaking slot
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    3 VIP passes
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Prominent branding on website and materials
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Half-page ad in post-event workbook
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Standard exhibition booth
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Inclusion in selected PR coverage
+                  </li>
                 </ul>
               </div>
+            </div>
 
-              <div className="bg-white p-6 rounded-lg border-2 border-primary relative">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
-                  POPULAR
-                </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Silver</h4>
-                <p className="text-3xl font-bold text-primary mb-4">₦1M</p>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>✓ All Bronze benefits</li>
-                  <li>✓ Booth space</li>
-                  <li>✓ 5 event tickets</li>
-                  <li>✓ Speaking opportunity</li>
-                  <li>✓ Logo on materials</li>
+            {/* Silver */}
+            <div className="bg-gradient-to-b from-gray-400 to-gray-500 text-white p-6 rounded-xl relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-300 text-gray-800 px-4 py-1 rounded-full text-xs font-bold">
+                SILVER
+              </div>
+              <div className="mt-4">
+                <p className="text-3xl font-bold mb-4">₦3M</p>
+                <ul className="space-y-2 text-sm text-gray-100">
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    2 VIP passes
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Logo on event website & materials
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Branding position on post-event materials
+                  </li>
                 </ul>
               </div>
+            </div>
 
-              <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Gold</h4>
-                <p className="text-3xl font-bold text-primary mb-4">₦2M+</p>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>✓ All Silver benefits</li>
-                  <li>✓ Title sponsorship option</li>
-                  <li>✓ 10 event tickets</li>
-                  <li>✓ Workshop hosting</li>
-                  <li>✓ Custom activation</li>
+            {/* Bronze */}
+            <div className="bg-gradient-to-b from-orange-700 to-orange-800 text-white p-6 rounded-xl relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-orange-400 text-orange-900 px-4 py-1 rounded-full text-xs font-bold">
+                BRONZE
+              </div>
+              <div className="mt-4">
+                <p className="text-3xl font-bold mb-4">₦1M</p>
+                <ul className="space-y-2 text-sm text-orange-100">
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    1 VIP pass
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Logo on event website & materials
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Brand mention in program
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
+          <p className="text-center text-gray-500 mt-6 text-sm">
+            Custom partnership options available. Contact us to discuss your specific needs.
+          </p>
+        </div>
 
-          {/* Application Form */}
-          <div className="p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Partnership Application</h3>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    *Company Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.companyName}
-                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    *Contact Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.contactName}
-                    onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
+        {/* Partnership Options */}
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 font-melo">Partnership Options</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-blue-50 p-6 rounded-xl">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">*Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    *Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
+              <h3 className="font-bold text-gray-900 mb-2">Advisory Booth</h3>
+              <p className="text-gray-600 text-sm">Set up an investment or service advisory booth to engage directly with attendees.</p>
+            </div>
+            <div className="bg-green-50 p-6 rounded-xl">
+              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
               </div>
+              <h3 className="font-bold text-gray-900 mb-2">Live Demo Walkthrough</h3>
+              <p className="text-gray-600 text-sm">Showcase your product or service with a live demonstration to the audience.</p>
+            </div>
+            <div className="bg-purple-50 p-6 rounded-xl">
+              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">Sponsored Masterclass</h3>
+              <p className="text-gray-600 text-sm">Host a branded masterclass session to educate and engage attendees.</p>
+            </div>
+            <div className="bg-orange-50 p-6 rounded-xl">
+              <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">Career & Wealth Toolkit</h3>
+              <p className="text-gray-600 text-sm">Provide branded resources and tools that attendees can take home.</p>
+            </div>
+          </div>
+        </div>
 
+        {/* Social Impact Section */}
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-sm p-8 mb-8 text-white">
+          <h2 className="text-2xl font-bold mb-4 font-melo">Impact Beyond Profit: Social Impact & CSR</h2>
+          <p className="mb-6 opacity-90">
+            Make a difference by donating or sponsoring a ticket for someone who cannot afford to attend.
+            Your contribution helps us create inclusive access to career and wellness resources.
+          </p>
+          <a
+            href={FLUTTERWAVE_DONATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            Donate or Sponsor a Ticket
+          </a>
+        </div>
+
+        {/* Contact Information */}
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 font-melo">Contact Us</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Phone / WhatsApp</p>
+                <a href="tel:+2348160313583" className="text-gray-900 font-semibold hover:text-green-600">
+                  +234 816 031 3583
+                </a>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Email</p>
+                <a href="mailto:events@balanceunleashed.org" className="text-gray-900 font-semibold hover:text-green-600">
+                  events@balanceunleashed.org
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Application Form */}
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 font-melo">Partnership Application</h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Company Website
+                  *Company Name
                 </label>
                 <input
-                  type="url"
-                  value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  placeholder="https://"
+                  type="text"
+                  required
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    *Partnership Tier Interest
-                  </label>
-                  <select
-                    required
-                    value={formData.partnershipType}
-                    onChange={(e) => setFormData({ ...formData, partnershipType: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
-                    <option value="">Select a tier</option>
-                    <option value="bronze">Bronze (₦500K)</option>
-                    <option value="silver">Silver (₦1M)</option>
-                    <option value="gold">Gold (₦2M+)</option>
-                    <option value="custom">Custom Package</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  *Contact Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.contactName}
+                  onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+            </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    *Estimated Budget
-                  </label>
-                  <select
-                    required
-                    value={formData.budget}
-                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
-                    <option value="">Select budget range</option>
-                    <option value="500k-1m">₦500K - ₦1M</option>
-                    <option value="1m-2m">₦1M - ₦2M</option>
-                    <option value="2m-5m">₦2M - ₦5M</option>
-                    <option value="5m+">₦5M+</option>
-                  </select>
-                </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">*Email</label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  *Tell us about your partnership goals
+                  *Phone Number
                 </label>
-                <textarea
+                <input
+                  type="tel"
                   required
-                  rows={5}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="What are you hoping to achieve through this partnership? What value can you bring to our attendees?"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                ></textarea>
+                />
               </div>
+            </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Company Website
+              </label>
+              <input
+                type="url"
+                value={formData.website}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                placeholder="https://"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                *Sponsorship Package Interest
+              </label>
+              <select
+                required
+                value={formData.partnershipType}
+                onChange={(e) => setFormData({ ...formData, partnershipType: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               >
-                {loading ? 'Submitting...' : 'Submit Partnership Application'}
-              </button>
-            </form>
-          </div>
+                <option value="">Select a package</option>
+                <option value="platinum">Platinum (₦7,500,000)</option>
+                <option value="gold">Gold (₦5,000,000)</option>
+                <option value="silver">Silver (₦3,000,000)</option>
+                <option value="bronze">Bronze (₦1,000,000)</option>
+                <option value="custom">Custom Package</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                *Tell us about your partnership goals
+              </label>
+              <textarea
+                required
+                rows={5}
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder="What are you hoping to achieve through this partnership? What value can you bring to our attendees?"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {loading ? 'Submitting...' : 'Submit Partnership Application'}
+            </button>
+          </form>
         </div>
       </div>
     </div>

@@ -309,7 +309,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
               {step === 'details' && (
                 <>
                   <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-3xl font-bold text-green-600 font-melo">
+                    <h1 className="text-3xl  text-green-600 font-melo font-semibold">
                       1. Add your details
                     </h1>
                     <p className={`font-medium ${
@@ -583,7 +583,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                 <div className="flex justify-between items-center mb-4 text-green-600">
                   <p className="text-sm">Coupon Discount</p>
                   <p className="text-sm font-semibold">
-                    -{formatPrice(couponDiscount.discount_amount)}
+                    -{formatPrice(couponDiscount.discount_amount * formData.quantity)}
                   </p>
                 </div>
               )}

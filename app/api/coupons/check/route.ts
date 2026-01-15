@@ -69,9 +69,12 @@ export async function POST(request: NextRequest) {
     // Calculate discount
     let discountAmount = 0;
     if (coupon.discount_type === 'percent') {
-      discountAmount = ticketType.price_in_kobo * (coupon.discount_value / 100);
+      // Cap percent discount at 100% to prevent invalid values
+      const percentValue = Math.min(coupon.discount_value, 100);
+      discountAmount = ticketType.price_in_kobo * (percentValue / 100);
     } else if (coupon.discount_type === 'fixed') {
-      discountAmount = coupon.discount_value;
+      // Cap fixed discount at ticket price
+      discountAmount = Math.min(coupon.discount_value, ticketType.price_in_kobo);
     }
 
     const newPrice = Math.max(0, ticketType.price_in_kobo - discountAmount);
