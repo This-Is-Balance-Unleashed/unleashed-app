@@ -65,15 +65,17 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid or expired coupon' }, { status: 400 });
       }
 
-      // Apply Discount
+      // Apply Discount (with safeguards for invalid values)
       validCouponId = coupon.id;
       if (coupon.discount_type === 'percent') {
-        // e.g., 5000 - (5000 * 0.10)
-        const discountAmount = finalPrice * (coupon.discount_value / 100);
+        // Cap percent discount at 100% to prevent invalid values
+        const percentValue = Math.min(coupon.discount_value, 100);
+        const discountAmount = finalPrice * (percentValue / 100);
         finalPrice -= discountAmount;
       } else if (coupon.discount_type === 'fixed') {
-        // e.g., 5000 - 1000 (value is in Kobo)
-        finalPrice -= coupon.discount_value;
+        // Cap fixed discount at total price
+        const fixedDiscount = Math.min(coupon.discount_value, finalPrice);
+        finalPrice -= fixedDiscount;
       }
 
       // Safety check: Price cannot be negative
