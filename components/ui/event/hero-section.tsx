@@ -102,10 +102,12 @@ export function HeroSection() {
             {/* Image Container with skew */}
             <div className="relative transform rounded-2xl overflow-hidden">
               <Image
-                src="/hero-people.svg"
-                alt="Event attendees"
-                width={800}
-                height={600}
+                src="https://res.cloudinary.com/drnqdd87d/image/upload/f_auto,q_auto:best/balanced/hero-illustration"
+                alt="Hit Refresh event - people gathering for a transformative experience"
+                width={966}
+                height={662}
+                sizes="(max-width: 600px) 400px, (max-width: 1000px) 800px, 966px"
+                quality={90}
                 className="w-full h-auto"
                 priority
               />

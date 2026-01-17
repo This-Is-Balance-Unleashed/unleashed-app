@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Button } from "./button";
-import { ZigzagIcon, WIcon, TinglesIcon } from '../icons';
+import { ZigzagIcon, WIcon, TinglesIcon } from "../icons";
 
 // Static data moved outside component to prevent recreation on each render
 const experiences = [
@@ -116,10 +116,13 @@ export function ExperienceSection() {
 
             <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/experience.svg"
+                src="https://res.cloudinary.com/drnqdd87d/image/upload/f_auto,q_auto:best,w_800,c_scale/balanced/esqu8cfw36nevj370hbd"
                 alt="Event attendees listening to speakers"
-                width={800}
-                height={600}
+                width={1264}
+                height={848}
+                sizes="(max-width: 600px) 400px, (max-width: 1000px) 800px, 1264px"
+                quality={90}
+                priority={false}
                 className="w-full h-auto"
               />
             </div>
@@ -131,7 +134,6 @@ export function ExperienceSection() {
       </div>
 
       {/* Green wave decoration at section bottom */}
-
     </section>
   );
 }

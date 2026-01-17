@@ -80,7 +80,7 @@ export function TargetAudienceSection() {
 
           {/* Black Card - Not For You */}
           <div className="relative bg-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-melo font-semibold text-white mb-4 sm:mb-6 md:mb-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-melo font-semibold text-white mb-4 sm:mb-6 md:mb-8">
               Hit Refresh is not for you if
             </h2>
 
