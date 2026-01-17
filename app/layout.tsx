@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { Inter_Tight, Young_Serif, DM_Sans } from "next/font/google";
-import localFont from "next/font/local"
+import { Young_Serif, DM_Sans } from "next/font/google";
 import "./globals.css";
-
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
-  display: "swap",
-  subsets: ["latin"],
-});
 
 const youngSerif = Young_Serif({
   weight: "400",
@@ -22,13 +15,6 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
-
-const meloDrama = localFont({
-  src: "./fonts/Melodrama-Variable.ttf",
-  display: "swap",
-  variable: "--font-melo",
-  weight: "200, 400, 600, 900"
-})
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unleashed.conference';
 
@@ -108,7 +94,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${interTight.variable} ${meloDrama.variable} ${youngSerif.variable} ${dmSans.variable} antialiased flex min-h-full flex-col`}
+        className={`${youngSerif.variable} ${dmSans.variable} antialiased flex min-h-full flex-col`}
         suppressHydrationWarning
       >
         {children}

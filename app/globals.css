@@ -10,8 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-dm-sans);
   --font-melo: var(--font-young-serif);
-  --font-inter-tight: var(--font-inter-tight);
-  --font-serif: var(--font-melo);
+  --font-serif: var(--font-young-serif);
 
   /* Primary Brand Colors */
   --color-primary: oklch(68% 0.18 50);
