@@ -19,8 +19,6 @@
     "@supabase/supabase-js": "^2.89.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.562.0",
-    "motion": "^12.23.26",
     "next": "16.1.1",
     "qrcode": "^1.5.4",
     "react": "19.2.3",

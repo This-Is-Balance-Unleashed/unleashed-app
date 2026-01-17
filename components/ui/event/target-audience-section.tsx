@@ -1,51 +1,57 @@
 import { CheckmarkIcon, XIcon } from '../icons';
 
+// Static data moved outside component to prevent recreation on each render
+const forYouList = [
+  "You're ambitious but constantly tired.",
+  'You\'ve said "I just need to breathe" more than 3 times this year; you don\'t want to run on fumes in 2026.',
+  "You've achieved your goals but lost your spark along the way.",
+  "You want to earn well without losing your mind in the process.",
+];
+
+const notForYouList = [
+  'You still believe stress is proof of commitment.',
+  'You believe and want to retain that burnout is a badge of honour.',
+  'You want to outwork yourself to the point of exhaustion.',
+  "You don't want to earn well and lose your mind in the process.",
+];
+
+// Style constants to prevent object recreation on each render
+const sectionStyle = {
+  background: 'linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)',
+  marginTop: '-26px'
+} as const;
+
+const noiseTextureStyle = {
+  backgroundImage: 'url(/noise.svg)',
+  backgroundSize: 'cover',
+} as const;
+
 export function TargetAudienceSection() {
-  const forYouList = [
-    "You're ambitious but constantly tired.",
-    'You\'ve said "I just need to breathe" more than 3 times this year; you don\'t want to run on fumes in 2026.',
-    "You've achieved your goals but lost your spark along the way.",
-    "You want to earn well without losing your mind in the process.",
-  ];
-
-  const notForYouList = [
-    'You still believe stress is proof of commitment.',
-    'You believe and want to retain that burnout is a badge of honour.',
-    'You want to outwork yourself to the point of exhaustion.',
-    "You don't want to earn well and lose your mind in the process.",
-  ];
-
   return (
-    <section className="relative bg-primary-light py-20 overflow-hidden" style={{
-        background: 'linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)',
-        marginTop: '-26px'
-      }}>
+    <section className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden" style={sectionStyle}>
       {/* Noise texture */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
-        style={{
-          backgroundImage: 'url(/noise.svg)',
-          backgroundSize: 'cover',
-        }}
+        style={noiseTextureStyle}
       />
 
-      <div className="relative container mx-auto px-6">
+      <div className="relative container mx-auto px-4 sm:px-6">
 
         {/* Two Cards Side by Side */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
           {/* Green Card - For You */}
-          <div className="relative bg-secondary rounded-3xl p-8 md:p-10 shadow-xl">
-            <h2 className="text-3xl md:text-4xl font-melo font-semibold text-white mb-8">
+          <div className="relative bg-secondary rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-melo font-semibold text-white mb-4 sm:mb-6 md:mb-8">
               Hit Refresh is for you if
             </h2>
 
-            <ul className="space-y-6">
+            <ul className="space-y-3 sm:space-y-4 md:space-y-6">
               {forYouList.map((item, index) => (
-                <li key={index} className="flex gap-4 items-start">
-                  <div className="shrink-0 w-8 h-8 flex items-center justify-center mt-1">
-                    <CheckmarkIcon className="w-5 h-5 text-white" />
+                <li key={index} className="flex gap-3 sm:gap-4 items-start">
+                  <div className="shrink-0 w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center mt-0.5 sm:mt-1">
+                    <CheckmarkIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <p className="text-white text-lg leading-relaxed font-sans">{item}</p>
+                  <p className="text-white text-sm sm:text-base md:text-lg leading-relaxed font-sans">{item}</p>
                 </li>
               ))}
             </ul>
@@ -73,18 +79,18 @@ export function TargetAudienceSection() {
           </div>
 
           {/* Black Card - Not For You */}
-          <div className="relative bg-black rounded-3xl p-8 md:p-10 shadow-xl">
-            <h2 className="text-3xl md:text-4xl font-melo font-semibold text-white mb-8">
+          <div className="relative bg-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-melo font-semibold text-white mb-4 sm:mb-6 md:mb-8">
               Hit Refresh is not for you if
             </h2>
 
-            <ul className="space-y-6">
+            <ul className="space-y-3 sm:space-y-4 md:space-y-6">
               {notForYouList.map((item, index) => (
-                <li key={index} className="flex gap-4 items-start">
-                  <div className="shrink-0 w-8 h-8 flex items-center justify-center mt-1">
-                    <XIcon className="w-5 h-5 text-white" />
+                <li key={index} className="flex gap-3 sm:gap-4 items-start">
+                  <div className="shrink-0 w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center mt-0.5 sm:mt-1">
+                    <XIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <p className="text-white text-lg leading-relaxed font-sans">{item}</p>
+                  <p className="text-white text-sm sm:text-base md:text-lg leading-relaxed font-sans">{item}</p>
                 </li>
               ))}
             </ul>

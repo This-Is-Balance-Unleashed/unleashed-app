@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendTicketConfirmationEmail } from '@/lib/mailerlite';
@@ -45,15 +45,13 @@ export async function POST(request: Request) {
         // This handles test webhooks and maintains backwards compatibility
       } else {
 
-        // 3. Update each reserved ticket to paid status (QR codes generated in verify endpoint)
-        for (let i = 0; i < reservedTickets.length; i++) {
-          const ticket = reservedTickets[i];
-
+        // 3. Update all reserved tickets to paid status in parallel (QR codes generated in verify endpoint)
+        const ticketUpdatePromises = reservedTickets.map((ticket, i) => {
           // Generate ticket_secret for verification (QR code will be generated in verify endpoint)
           const ticketSecret = `${reference}::${metadata.event_id}::ticket-${i + 1}`;
 
           // Update the reserved ticket to paid status WITHOUT QR code
-          const { error: updateError } = await supabaseAdmin
+          return supabaseAdmin
             .from('tickets')
             .update({
               status: 'paid',
@@ -61,10 +59,12 @@ export async function POST(request: Request) {
               // QR code fields (qr_code_url, ticket_secret for QR) will be set by verify endpoint
             })
             .eq('id', ticket.id);
+        });
 
-          if (updateError) {
-            throw updateError;
-          }
+        const updateResults = await Promise.all(ticketUpdatePromises);
+        const updateError = updateResults.find(result => result.error)?.error;
+        if (updateError) {
+          throw updateError;
         }
       }
 
@@ -91,48 +91,62 @@ export async function POST(request: Request) {
         }
       }
 
-      // 9. Send confirmation email with ticket links
+      // 9. Send confirmation email with ticket links (non-blocking using after())
       if (reservedTickets && reservedTickets.length > 0) {
-        try {
-          // Fetch event and ticket type details for email
-          const { data: eventData } = await supabaseAdmin
-            .from('events')
-            .select('title')
-            .eq('id', metadata.event_id)
-            .single();
+        // Capture values needed for email sending
+        const ticketsForEmail = [...reservedTickets];
+        const emailMetadata = { ...metadata };
+        const emailCustomer = { ...customer };
+        const emailAmount = amount;
+        const emailReference = reference;
 
-          const { data: ticketTypeData } = await supabaseAdmin
-            .from('ticket_types')
-            .select('name')
-            .eq('id', metadata.ticket_type_id)
-            .single();
+        after(async () => {
+          try {
+            // Fetch event and ticket type details for email in parallel
+            const [eventResult, ticketTypeResult] = await Promise.all([
+              supabaseAdmin
+                .from('events')
+                .select('title')
+                .eq('id', emailMetadata.event_id)
+                .single(),
+              supabaseAdmin
+                .from('ticket_types')
+                .select('name')
+                .eq('id', emailMetadata.ticket_type_id)
+                .single(),
+            ]);
 
-          // Get the base URL from environment or construct it
-          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://hit-refresh.balanceunleashed.org';
+            const { data: eventData } = eventResult;
+            const { data: ticketTypeData } = ticketTypeResult;
 
-          // Build ticket info array with URLs
-          const ticketInfo = reservedTickets.map((ticket, index) => ({
-            id: ticket.id,
-            ticketNumber: index + 1,
-            ticketUrl: `${baseUrl}/tickets/${ticket.id}`,
-          }));
+            // Get the base URL from environment or construct it
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://hit-refresh.balanceunleashed.org';
 
-          // Get customer name from the first ticket
-          const customerName = reservedTickets[0].name || customer.email.split('@')[0];
+            // Build ticket info array with URLs
+            const ticketInfo = ticketsForEmail.map((ticket, index) => ({
+              id: ticket.id,
+              ticketNumber: index + 1,
+              ticketUrl: `${baseUrl}/tickets/${ticket.id}`,
+            }));
 
-          await sendTicketConfirmationEmail({
-            to: customer.email,
-            customerName,
-            eventTitle: eventData?.title || 'Hit Refresh Summit',
-            ticketTypeName: ticketTypeData?.name || 'General Admission',
-            tickets: ticketInfo,
-            totalAmount: amount,
-            reference: reference.split('-')[0], // Remove ticket number suffix
-          });
-        } catch (emailError) {
-          // Don't throw - ticket is already created, just log email failure
-          // In production, you might want to queue this for retry
-        }
+            // Get customer name from the first ticket
+            const customerName = ticketsForEmail[0].name || emailCustomer.email.split('@')[0];
+
+            await sendTicketConfirmationEmail({
+              to: emailCustomer.email,
+              customerName,
+              eventTitle: eventData?.title || 'Hit Refresh Summit',
+              ticketTypeName: ticketTypeData?.name || 'General Admission',
+              tickets: ticketInfo,
+              totalAmount: emailAmount,
+              reference: emailReference.split('-')[0], // Remove ticket number suffix
+            });
+          } catch (emailError) {
+            // Don't throw - ticket is already created, just log email failure
+            // In production, you might want to queue this for retry
+            console.error('Failed to send confirmation email:', emailError);
+          }
+        });
       }
     }
 

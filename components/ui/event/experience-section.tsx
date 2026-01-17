@@ -1,45 +1,49 @@
 import Image from "next/image";
 import { Button } from "./button";
-import { ZigzagIcon, WIcon, TinglesIcon } from '../icons';
+import { ZigzagIcon, WIcon, TinglesIcon } from "../icons";
+
+// Static data moved outside component to prevent recreation on each render
+const experiences = [
+  {
+    title: "Keynotes:",
+    description:
+      "Designing careers & businesses rooted in purpose, global impact and wellness",
+  },
+  {
+    title: "Speaker Sessions:",
+    description:
+      "Insights from industry leaders who took a step back & built remarkable careers.",
+  },
+  {
+    title: "Panel Sessions:",
+    description:
+      "Insights for financial and all-round growth for a more sustainable and impactful life.",
+  },
+  {
+    title: "Masterclasses:",
+    description:
+      "Practical systems for calm yet efficient productivity rooted in wellness.",
+  },
+];
+
+// Style constants to prevent object recreation on each render
+const whiteNoiseTextureStyle = {
+  backgroundImage: "url(/white-noise.svg)",
+  backgroundSize: "cover",
+} as const;
 
 export function ExperienceSection() {
-  const experiences = [
-    {
-      title: "Keynotes:",
-      description:
-        "Designing careers & businesses rooted in purpose, global impact and wellness",
-    },
-    {
-      title: "Speaker Sessions:",
-      description:
-        "Insights from industry leaders who took a step back & built remarkable careers.",
-    },
-    {
-      title: "Panel Sessions:",
-      description:
-        "Insights for financial and all-round growth for a more sustainable and impactful life.",
-    },
-    {
-      title: "Masterclasses:",
-      description:
-        "Practical systems for calm yet efficient productivity rooted in wellness.",
-    },
-  ];
-
   return (
-    <section className="relative bg-black py-20 overflow-hidden">
+    <section className="relative bg-black py-12 sm:py-16 md:py-20 overflow-hidden">
       {/* White noise texture */}
       <div
         className="absolute inset-0 pointer-events-none opacity-20"
-        style={{
-          backgroundImage: "url(/white-noise.svg)",
-          backgroundSize: "cover",
-        }}
+        style={whiteNoiseTextureStyle}
       />
 
-      {/* Decorative swoosh top right */}
+      {/* Decorative swoosh top right - hidden on mobile */}
       <svg
-        className="absolute top-8 right-8 w-32 h-32 text-secondary"
+        className="absolute top-8 right-8 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 text-secondary hidden sm:block"
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -53,29 +57,29 @@ export function ExperienceSection() {
         />
       </svg>
 
-      <div className="relative z-10 container mx-auto px-6">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-melo font-semibold text-white mb-4">
+        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold text-white mb-4">
             What You Will Experience
           </h2>
           {/* Orange wavy underline */}
-          <ZigzagIcon className="absolute right-32/100 top-13 -rotate-1 mx-auto w-64 md:w-65 mb-6" />
-          <p className="text-lg md:text-xl text-white max-w-2xl mx-auto leading-relaxed font-sans mt-8">
+          <ZigzagIcon className="absolute right-1/10 sm:right-32/100 top-10 sm:top-13 -rotate-1 mx-auto w-48 sm:w-64 md:w-65 mb-6 hidden sm:block" />
+          <p className="text-base sm:text-lg md:text-xl text-white max-w-2xl mx-auto leading-relaxed font-sans mt-6 sm:mt-8">
             Rooted in purpose, insights from industry leaders, and all round
             growth for a sustainable and impactful life
           </p>
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
           {/* Left Column - Content List */}
-          <div className="space-y-8">
+          <div className="space-y-5 sm:space-y-6 md:space-y-8">
             {experiences.map((experience, index) => (
-              <div key={index} className="flex gap-4">
+              <div key={index} className="flex gap-3 sm:gap-4">
                 {/* Orange arrow */}
                 <svg
-                  className="w-12 h-12 -rotate-90 shrink-0 mt-1"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 -rotate-90 shrink-0 mt-1"
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
                   height="36"
@@ -89,7 +93,7 @@ export function ExperienceSection() {
                 </svg>
 
                 <div className="text-white">
-                  <p className="text-base md:text-lg leading-relaxed font-sans max-w-[45ch]">
+                  <p className="text-sm sm:text-base md:text-lg leading-relaxed font-sans max-w-[45ch]">
                     <span className="font-bold">{experience.title}</span>{" "}
                     {experience.description}
                   </p>
@@ -98,7 +102,7 @@ export function ExperienceSection() {
             ))}
 
             {/* CTA Button */}
-            <div className="pt-8">
+            <div className="pt-4 sm:pt-6 md:pt-8">
               <Button variant="primary" size="lg" href="/tickets">
                 Get Your Ticket
               </Button>
@@ -106,28 +110,30 @@ export function ExperienceSection() {
           </div>
 
           {/* Right Column - Event Photo */}
-          <div className="relative">
+          <div className="relative mt-8 lg:mt-0">
             {/* Decorative w.svg at top */}
-            <WIcon className="z-10 absolute -top-4 -left-6 w-16 h-16 md:w-20 md:h-20" />
+            <WIcon className="z-10 absolute -top-2 -left-2 sm:-top-4 sm:-left-6 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" />
 
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/experience.svg"
+                src="https://res.cloudinary.com/drnqdd87d/image/upload/f_auto,q_auto:best,w_800,c_scale/balanced/esqu8cfw36nevj370hbd"
                 alt="Event attendees listening to speakers"
-                width={800}
-                height={600}
+                width={1264}
+                height={848}
+                sizes="(max-width: 600px) 400px, (max-width: 1000px) 800px, 1264px"
+                quality={90}
+                priority={false}
                 className="w-full h-auto"
               />
             </div>
 
             {/* Bottom decorative tingles.svg */}
-            <TinglesIcon className="absolute -bottom-8 -right-8 w-20 h-20 md:w-24 md:h-24" />
+            <TinglesIcon className="absolute -bottom-4 -right-4 sm:-bottom-8 sm:-right-8 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" />
           </div>
         </div>
       </div>
 
       {/* Green wave decoration at section bottom */}
-      
     </section>
   );
 }

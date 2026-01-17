@@ -20,12 +20,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch coupon from database
-    const { data: coupon, error: couponError } = await supabaseAdmin
-      .from('coupons')
-      .select('*')
-      .eq('code', code.toUpperCase())
-      .single();
+    // Fetch coupon and ticket type in parallel (independent queries)
+    const [couponResult, ticketTypeResult] = await Promise.all([
+      supabaseAdmin
+        .from('coupons')
+        .select('*')
+        .eq('code', code.toUpperCase())
+        .single(),
+      supabaseAdmin
+        .from('ticket_types')
+        .select('price_in_kobo, event_id')
+        .eq('id', ticket_type_id)
+        .single(),
+    ]);
+
+    const { data: coupon, error: couponError } = couponResult;
+    const { data: ticketType, error: ticketTypeError } = ticketTypeResult;
 
     if (couponError || !coupon) {
       return NextResponse.json(
@@ -33,13 +43,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Fetch ticket type to get original price and event info
-    const { data: ticketType, error: ticketTypeError } = await supabaseAdmin
-      .from('ticket_types')
-      .select('price_in_kobo, event_id')
-      .eq('id', ticket_type_id)
-      .single();
 
     if (ticketTypeError || !ticketType) {
       return NextResponse.json(

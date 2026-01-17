@@ -17,6 +17,7 @@ interface TicketDetails {
 }
 
 interface VerifyResponse {
+  error?: Error | string | null;
   success: boolean;
   tickets_count: number;
   total_amount_paid: number;
@@ -30,7 +31,7 @@ function TicketSuccessContent() {
 
   const [ticketsData, setTicketsData] = useState<VerifyResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<VerifyResponse['error']>(null);
 
   useEffect(() => {
     if (!reference) {
@@ -48,7 +49,7 @@ function TicketSuccessContent() {
         if (response.ok && data.success) {
           setTicketsData(data);
         } else {
-          setError(data.error || 'Failed to verify payment');
+          setError(data?.error || 'Failed to verify payment');
         }
       } catch (err) {
         setError('Failed to verify payment. Please contact support.');
@@ -89,7 +90,7 @@ function TicketSuccessContent() {
             />
           </svg>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Verification Failed</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <p className="text-gray-600 mb-6">{error as string}</p>
           <div className="space-y-3">
             <Link
               href="/"

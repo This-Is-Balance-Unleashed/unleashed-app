@@ -17,7 +17,7 @@ export default function SponsorPage() {
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
         <p className="text-gray-600 mb-2">Redirecting to donation page...</p>
         <p className="text-sm text-gray-500">
-          If you're not redirected,{' '}
+          If you&apos;re not redirected,{' '}
           <a 
             href="https://flutterwave.com/donate/98memyo7lgbf" 
             className="text-primary hover:underline"

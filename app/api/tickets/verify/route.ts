@@ -106,20 +106,26 @@ async function handlePaymentVerification(reference: string) {
     }
 
 
-    // Update each ticket with QR code and paid status
-    const updatedTickets = [];
-    for (let i = 0; i < allTickets.length; i++) {
-      const ticket = allTickets[i];
+    // Build index map upfront for O(1) lookups (avoids O(n²) findIndex in loop)
+    const ticketIndexMap = new Map(allTickets.map((t, idx) => [t.id, idx]));
 
-      // Check if ticket already has QR code (from previous verify call or webhook)
+    // Single-pass partition of tickets (avoids iterating twice with separate filters)
+    const ticketsNeedingQR: typeof allTickets = [];
+    const ticketsWithQR: typeof allTickets = [];
+    for (const ticket of allTickets) {
       if (ticket.qr_code_url) {
-        updatedTickets.push(ticket);
-        continue;
+        ticketsWithQR.push(ticket);
+      } else {
+        ticketsNeedingQR.push(ticket);
       }
+    }
 
+    // Generate QR codes for all tickets that need them in parallel
+    const qrGenerationPromises = ticketsNeedingQR.map(async (ticket) => {
+      const originalIndex = ticketIndexMap.get(ticket.id) ?? 0;
 
       // Generate a Secure Unique String for each Ticket
-      const ticketSecret = ticket.ticket_secret || `${reference}::${metadata.event_id}::ticket-${i + 1}`;
+      const ticketSecret = ticket.ticket_secret || `${reference}::${metadata.event_id}::ticket-${originalIndex + 1}`;
 
       // Generate QR Code
       const qrCodeBuffer = await QRCode.toBuffer(ticketSecret, {
@@ -130,7 +136,7 @@ async function handlePaymentVerification(reference: string) {
       });
 
       // Upload to Supabase Storage
-      const filePath = `${metadata.user_id || paymentData.customer.email}/${reference}-ticket-${i + 1}.png`;
+      const filePath = `${metadata.user_id || paymentData.customer.email}/${reference}-ticket-${originalIndex + 1}.png`;
       const { error: uploadError } = await supabaseAdmin.storage
         .from('qr-codes')
         .upload(filePath, qrCodeBuffer, {
@@ -139,10 +145,7 @@ async function handlePaymentVerification(reference: string) {
         });
 
       if (uploadError) {
-        return NextResponse.json(
-          { success: false, error: 'Failed to generate QR code' },
-          { status: 500 }
-        );
+        throw new Error('Failed to generate QR code');
       }
 
       // Get the Public URL
@@ -161,33 +164,49 @@ async function handlePaymentVerification(reference: string) {
         .eq('id', ticket.id);
 
       if (updateError) {
-        return NextResponse.json(
-          { success: false, error: 'Failed to update ticket' },
-          { status: 500 }
-        );
+        throw new Error('Failed to update ticket');
       }
 
-      updatedTickets.push(ticket);
+      return ticket;
+    });
+
+    try {
+      const processedTickets = await Promise.all(qrGenerationPromises);
+      var updatedTickets = [...ticketsWithQR, ...processedTickets];
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: error instanceof Error ? error.message : 'Failed to process tickets' },
+        { status: 500 }
+      );
     }
 
-    const qrCodesGenerated = updatedTickets.filter((t, idx) => !allTickets[idx].qr_code_url).length;
+    const qrCodesGenerated = ticketsNeedingQR.length;
 
     // Check if this is a test transaction (skip inventory updates)
     const isTestTransaction = reference.startsWith('test_');
 
-    // Update coupon usage if applicable (skip for test transactions)
-    if (metadata.coupon_id && !isTestTransaction) {
-      const { error: couponError } = await supabaseAdmin.rpc('increment_coupon_usage', {
-        coupon_uuid: metadata.coupon_id
-      });
-    }
-
-    // Update ticket sold quantity (skip for test transactions)
+    // Update coupon usage and ticket sold quantity in parallel (skip for test transactions)
     if (!isTestTransaction) {
-      const { error: soldError } = await supabaseAdmin.rpc('increment_ticket_sold', {
-        ticket_type_uuid: metadata.ticket_type_id,
-        increment_by: quantity
-      });
+      const inventoryUpdates: Promise<{ error: unknown }>[] = [];
+
+      // Update coupon usage if applicable
+      if (metadata.coupon_id) {
+        inventoryUpdates.push(
+          supabaseAdmin.rpc('increment_coupon_usage', {
+            coupon_uuid: metadata.coupon_id
+          })
+        );
+      }
+
+      // Update ticket sold quantity
+      inventoryUpdates.push(
+        supabaseAdmin.rpc('increment_ticket_sold', {
+          ticket_type_uuid: metadata.ticket_type_id,
+          increment_by: quantity
+        })
+      );
+
+      await Promise.all(inventoryUpdates);
     }
 
     // Fetch complete details for ALL tickets
