@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { memo } from 'react';
 import { Button } from './button';
 
 interface TicketProps {
@@ -12,27 +13,29 @@ interface TicketProps {
   className?: string;
 }
 
-function TicketCard({ type, title, label, description, price, ticketTypeId, className = '' }: TicketProps) {
-  const bgColors = {
-    general: 'bg-white border-4 border-blue-500',
-    vip: 'bg-yellow-400',
-    teams: 'bg-black text-white',
-    virtual: 'bg-secondary text-white',
-  };
+// Style constants moved outside component to prevent recreation on each render
+const bgColors = {
+  general: 'bg-white border-4 border-blue-500',
+  vip: 'bg-yellow-400',
+  teams: 'bg-black text-white',
+  virtual: 'bg-secondary text-white',
+} as const;
 
+// Memoized TicketCard component to prevent unnecessary re-renders
+const TicketCard = memo(function TicketCard({ type, title, label, description, price, ticketTypeId, className = '' }: TicketProps) {
   return (
     <Link href={`/purchase/${ticketTypeId}`} className="block">
       <div
-        className={`relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300 ${bgColors[type]} ${className}`}
+        className={`relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300 ${bgColors[type]} ${className}`}
       >
-      <div className="grid grid-cols-[1fr_auto] min-h-70">
+      <div className="grid grid-cols-[1fr_auto] min-h-52 sm:min-h-60 md:min-h-70">
         {/* Main Content */}
-        <div className="p-6 md:p-8 flex flex-col justify-between">
+        <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-between">
           {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <Image src="/icon-logo.svg" alt="Logo" width={40} height={40} />
+          <div className="flex items-start justify-between mb-2 sm:mb-4">
+            <Image src="/icon-logo.svg" alt="Logo" width={40} height={40} className="w-8 h-8 sm:w-10 sm:h-10" />
             <span
-              className={`text-xs md:text-sm font-medium px-3 py-1 rounded ${
+              className={`text-[10px] sm:text-xs md:text-sm font-medium px-2 sm:px-3 py-1 rounded ${
                 type === 'general' || type === 'vip' ? 'text-black' : 'text-white opacity-70'
               }`}
             >
@@ -42,9 +45,9 @@ function TicketCard({ type, title, label, description, price, ticketTypeId, clas
 
           {/* Content */}
           <div className="flex-1">
-            <h3 className="text-2xl md:text-3xl font-semibold font-melo mb-3">{title}</h3>
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold font-melo mb-2 sm:mb-3">{title}</h3>
             <p
-              className={`text-sm md:text-base leading-relaxed font-sans ${
+              className={`text-xs sm:text-sm md:text-base leading-relaxed font-sans ${
                 type === 'teams' || type === 'virtual'
                   ? 'text-gray-200'
                   : type === 'vip'
@@ -57,23 +60,23 @@ function TicketCard({ type, title, label, description, price, ticketTypeId, clas
           </div>
 
           {/* Price */}
-          <div className="mt-4">
-            <p className="text-2xl md:text-3xl font-bold">{price}</p>
+          <div className="mt-2 sm:mt-4">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">{price}</p>
           </div>
         </div>
 
         {/* Perforated Edge & Barcode Section */}
-        <div className="relative w-24 md:w-32 border-l-2 border-dashed border-gray-400">
+        <div className="relative w-16 sm:w-20 md:w-24 lg:w-32 border-l-2 border-dashed border-gray-400">
           {/* Perforated circles */}
-          <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black" />
+          <div className="absolute -left-2 sm:-left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-black" />
 
           {/* Barcode */}
-          <div className="absolute inset-0 flex items-center justify-center p-4">
+          <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4">
             <svg
               viewBox="0 0 100 200"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-32 md:h-40"
+              className="w-full h-24 sm:h-28 md:h-32 lg:h-40"
             >
               {/* Barcode lines */}
               {Array.from({ length: 15 }).map((_, i) => (
@@ -94,55 +97,56 @@ function TicketCard({ type, title, label, description, price, ticketTypeId, clas
       </div>
 
       {/* Ticket notch effects */}
-      <div className="absolute -top-3 right-28 w-6 h-6 rounded-full bg-black" />
-      <div className="absolute -bottom-3 right-28 w-6 h-6 rounded-full bg-black" />
+      <div className="absolute -top-2 sm:-top-3 right-16 sm:right-20 md:right-24 lg:right-28 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-black" />
+      <div className="absolute -bottom-2 sm:-bottom-3 right-16 sm:right-20 md:right-24 lg:right-28 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-black" />
       </div>
     </Link>
   );
-}
+});
+
+// Static ticket data moved outside component to prevent recreation on each render
+const tickets = [
+  {
+    type: 'general' as const,
+    title: 'Refresh Access',
+    label: 'General Access',
+    description: 'Access to all sessions + Two Masterclasses + Digital Reflection Workbook.',
+    price: '₦10,000',
+    ticketTypeId: '00000000-0000-0000-0001-000000000001',
+  },
+  {
+    type: 'vip' as const,
+    title: 'Refresh+ Experience',
+    label: 'VIP',
+    description:
+      'Everything in General Admission + All Masterclasses + Front-row seating + Wellness Goody Bag.',
+    price: '₦18,000',
+    ticketTypeId: '00000000-0000-0000-0001-000000000002',
+  },
+  {
+    type: 'teams' as const,
+    title: 'Corporate Refresh',
+    label: 'Teams',
+    description: '5–8 General Admission tickets + Reserved team seating area += Post-summit "Career Wellness Audit" report',
+    price: '₦70,000',
+    ticketTypeId: '00000000-0000-0000-0001-000000000003',
+  },
+  {
+    type: 'virtual' as const,
+    title: 'Refresh Online',
+    label: 'Virtual Pass',
+    description: 'Livestream access + 14-day replay.',
+    price: '₦6,500',
+    ticketTypeId: '00000000-0000-0000-0001-000000000004',
+  },
+];
 
 export function PricingSection() {
-  const tickets = [
-    {
-      type: 'general' as const,
-      title: 'Refresh Access',
-      label: 'General Access',
-      description: 'Access to all sessions + Two Masterclasses + Digital Reflection Workbook.',
-      price: '₦10,000',
-      ticketTypeId: '00000000-0000-0000-0001-000000000001',
-    },
-    {
-      type: 'vip' as const,
-      title: 'Refresh+ Experience',
-      label: 'VIP',
-      description:
-        'Everything in General Admission + All Masterclasses + Front-row seating + Wellness Goody Bag.',
-      price: '₦18,000',
-      ticketTypeId: '00000000-0000-0000-0001-000000000002',
-    },
-    {
-      type: 'teams' as const,
-      title: 'Corporate Refresh',
-      label: 'Teams',
-      description: '5–8 General Admission tickets + Reserved team seating area += Post-summit "Career Wellness Audit" report',
-      price: '₦70,000',
-      ticketTypeId: '00000000-0000-0000-0001-000000000003',
-    },
-    {
-      type: 'virtual' as const,
-      title: 'Refresh Online',
-      label: 'Virtual Pass',
-      description: 'Livestream access + 14-day replay.',
-      price: '₦6,500',
-      ticketTypeId: '00000000-0000-0000-0001-000000000004',
-    },
-  ];
-
   return (
-    <section className="relative bg-black py-20 overflow-hidden">
-      <div className="relative z-10 container mx-auto px-6">
+    <section className="relative bg-black py-12 sm:py-16 md:py-20 overflow-hidden">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16 relative">
+        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16 relative">
           {/* Right swoosh decoration */}
           <svg
             className="absolute right-19 top-0 w-12 h-12 rotate-30 hidden lg:block"
@@ -160,13 +164,13 @@ export function PricingSection() {
             <path fill="#fff" d="m45.3 54.7.7.8q0-.7-.7-.8" />
           </svg>
 
-          <h2 className="text-4xl md:text-5xl font-melo font-semibold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold text-white mb-4">
             Choose Your Experience
           </h2>
 
           {/* Choose experience underline */}
           <svg
-            className="mx-auto w-52"
+            className="mx-auto w-36 sm:w-44 md:w-52"
             xmlns="http://www.w3.org/2000/svg"
             width="203"
             height="32"
@@ -181,7 +185,7 @@ export function PricingSection() {
         </div>
 
         {/* Tickets Grid */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto mb-8 sm:mb-10 md:mb-12">
           {tickets.map((ticket, index) => (
             <TicketCard key={index} {...ticket} />
           ))}
@@ -195,8 +199,8 @@ export function PricingSection() {
         </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute bottom-8 left-8 w-16 h-16">
+      {/* Decorative elements - hidden on mobile */}
+      <div className="absolute bottom-8 left-8 w-12 h-12 sm:w-16 sm:h-16 hidden sm:block">
         <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="25" cy="25" r="20" fill="var(--color-primary)" opacity="0.3" />
         </svg>

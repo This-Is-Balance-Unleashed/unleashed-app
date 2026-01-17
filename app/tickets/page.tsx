@@ -1,11 +1,6 @@
-import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-
-export const metadata: Metadata = {
-  title: 'Get Your Tickets',
-  description: 'Choose your ticket type for Hit Refresh: Career + Wellness Summit 2026. From General Admission to VIP experiences, find the perfect fit for your journey.',
-};
+import { memo } from 'react';
 
 interface TicketType {
   id: string;
@@ -18,6 +13,14 @@ interface TicketType {
   popular?: boolean;
   color: 'blue' | 'yellow' | 'black' | 'teal';
 }
+
+// Style constants moved outside component to prevent recreation on each render
+const bgColors = {
+  blue: 'bg-white border-4 border-blue-500',
+  yellow: 'bg-yellow-400',
+  black: 'bg-black text-white',
+  teal: 'bg-[oklch(70%_0.15_200)] text-white',
+} as const;
 
 const ticketTypes: TicketType[] = [
   {
@@ -163,14 +166,8 @@ export default function TicketsPage() {
   );
 }
 
-function TicketCard({ ticket }: { ticket: TicketType }) {
-  const bgColors = {
-    blue: 'bg-white border-4 border-blue-500',
-    yellow: 'bg-yellow-400',
-    black: 'bg-black text-white',
-    teal: 'bg-[oklch(70%_0.15_200)] text-white',
-  };
-
+// Memoized TicketCard component to prevent unnecessary re-renders
+const TicketCard = memo(function TicketCard({ ticket }: { ticket: TicketType }) {
   return (
     <div className="relative">
       {ticket.popular && (
@@ -280,9 +277,10 @@ function TicketCard({ ticket }: { ticket: TicketType }) {
       </Link>
     </div>
   );
-}
+});
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
+// Memoized FAQItem component to prevent unnecessary re-renders
+const FAQItem = memo(function FAQItem({ question, answer }: { question: string; answer: string }) {
   return (
     <details className="group bg-white rounded-lg shadow-sm border border-gray-200">
       <summary className="cursor-pointer p-6 font-semibold text-gray-900 flex items-center justify-between group-open:border-b group-open:border-gray-200">
@@ -299,4 +297,4 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       <div className="p-6 pt-0 text-gray-600">{answer}</div>
     </details>
   );
-}
+});

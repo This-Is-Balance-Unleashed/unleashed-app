@@ -9,22 +9,33 @@ import {
   WIcon,
 } from "../icons";
 
+// Style constants to prevent object recreation on each render
+const sectionGradientStyle = {
+  background: "linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)",
+} as const;
+
+const noiseTextureStyle = {
+  backgroundImage: "url(/noise.svg)",
+  backgroundSize: "cover",
+} as const;
+
+const dateBadgeStyle = {
+  backgroundImage: "url(/border-date.svg)",
+  backgroundSize: "100% 100%",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center",
+} as const;
+
 export function HeroSection() {
   return (
     <section
       className="relative min-h-screen overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(to bottom, var(--color-primary-light), #f5f1ed)",
-      }}
+      style={sectionGradientStyle}
     >
       {/* Noise texture overlay */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
-        style={{
-          backgroundImage: "url(/noise.svg)",
-          backgroundSize: "cover",
-        }}
+        style={noiseTextureStyle}
       />
 
       {/* Header/Navigation */}
@@ -44,12 +55,7 @@ export function HeroSection() {
             <div className="inline-block">
               <div
                 className="px-4 py-3 sm:px-8 sm:py-4 md:px-15 md:py-7 inline-flex items-center gap-2"
-                style={{
-                  backgroundImage: "url(/border-date.svg)",
-                  backgroundSize: "100% 100%",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
-                }}
+                style={dateBadgeStyle}
               >
                 <span className="text-xs sm:text-sm md:text-base font-medium font-sans">
                   28th February, 2026 | Lagos, Nigeria

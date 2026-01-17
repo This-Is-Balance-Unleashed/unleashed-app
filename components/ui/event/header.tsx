@@ -7,10 +7,10 @@ import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/re
 import { Button } from './button';
 
 const navigation = [
-  { name: 'Home', href: '/' },
+  // { name: 'Home', href: '/' },
   { name: 'Tickets', href: '/tickets' },
   { name: 'Partner', href: '/partner' },
-  { name: 'Sponsor', href: '/sponsor' },
+  // { name: 'Sponsor', href: '/sponsor' },
 ];
 
 export function Header() {
@@ -27,7 +27,7 @@ export function Header() {
               alt="Career + Wellness Summit"
               width={160}
               height={48}
-              className="w-32 sm:w-40 md:w-48 lg:w-[200px] h-auto"
+              className="w-32 sm:w-40 md:w-48 lg:w-50 h-auto"
               priority
             />
           </Link>
@@ -160,13 +160,6 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Sponsor A Ticket
-                  </Link>
-                  <Link
-                    href="/tickets"
-                    className="block w-full text-center px-6 py-3 mt-3 bg-black text-white font-semibold rounded-lg hover:opacity-90 transition-opacity"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Get Your Ticket
                   </Link>
                 </div>
               </div>

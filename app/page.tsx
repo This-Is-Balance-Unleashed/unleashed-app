@@ -1,11 +1,32 @@
+import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/ui/event/hero-section';
-import { ValuePropositionSection } from '@/components/ui/event/value-proposition-section';
-import { ExperienceSection } from '@/components/ui/event/experience-section';
-import { TargetAudienceSection } from '@/components/ui/event/target-audience-section';
-import { PricingSection } from '@/components/ui/event/pricing-section';
-import { FinalCTASection } from '@/components/ui/event/final-cta-section';
-import { Footer } from '@/components/ui/event/footer';
 import { EventSchema } from '@/components/seo/EventSchema';
+
+// Dynamic imports for below-fold sections to reduce initial bundle size
+const ValuePropositionSection = dynamic(
+  () => import('@/components/ui/event/value-proposition-section').then(m => m.ValuePropositionSection),
+  { ssr: true }
+);
+const ExperienceSection = dynamic(
+  () => import('@/components/ui/event/experience-section').then(m => m.ExperienceSection),
+  { ssr: true }
+);
+const TargetAudienceSection = dynamic(
+  () => import('@/components/ui/event/target-audience-section').then(m => m.TargetAudienceSection),
+  { ssr: true }
+);
+const PricingSection = dynamic(
+  () => import('@/components/ui/event/pricing-section').then(m => m.PricingSection),
+  { ssr: true }
+);
+const FinalCTASection = dynamic(
+  () => import('@/components/ui/event/final-cta-section').then(m => m.FinalCTASection),
+  { ssr: true }
+);
+const Footer = dynamic(
+  () => import('@/components/ui/event/footer').then(m => m.Footer),
+  { ssr: true }
+);
 
 export default function Home() {
   return (

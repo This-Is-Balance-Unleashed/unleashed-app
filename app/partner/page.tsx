@@ -3,7 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const FLUTTERWAVE_DONATION_URL = 'https://flutterwave.com/donate/vwjkrhdeesdy';
+// Reusable checkmark icon component to avoid repeated inline SVGs
+function CheckIcon() {
+  return (
+    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+  );
+}
 
 export default function PartnerPage() {
   const [formData, setFormData] = useState({
@@ -93,65 +102,44 @@ export default function PartnerPage() {
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 font-melo">Partner With Us</h1>
           <p className="text-xl opacity-90 max-w-2xl">
-            Join Hit Refresh 2026 in empowering 1,000+ professionals through career growth, financial wellness, and sustainable success.
+            Join Hit Refresh 2026 in empowering 1,000+ mid-to-senior professionals, entrepreneurs, and leaders through career growth, financial wellness, and sustainable success.
           </p>
-          <div className="mt-6">
-            <a
-              href={FLUTTERWAVE_DONATION_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              Donate or Sponsor a Ticket
-            </a>
-          </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto py-12 px-4">
         {/* Why Partner Section */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 font-melo">Why Partner With Hit Refresh?</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 font-melo">Benefits of Partnering With Us</h2>
           <p className="text-gray-600 mb-6">
-            Hit Refresh 2026 brings together 1,000+ ambitious young professionals who are actively thinking about
-            career growth and financial security. This summit provides a trusted, education-led environment to
-            connect with future high-value customers and position your brand as a long-term partner in their success.
+            Hit Refresh 2026 brings together 1,000+ mid-to-senior professionals, entrepreneurs, and leaders (ages 25-45)
+            seeking high performance without burnout. With this partnership, we can help reshape how the next generation
+            of African professionals and leaders build long-term, globally diversified wealth.
           </p>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p className="text-gray-700">Drive product/service adoption among young professionals</p>
+              <CheckIcon />
+              <p className="text-gray-700">Category Leadership in Global Wealth & Financial Wellbeing</p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p className="text-gray-700">Position your brand as a gateway for first-time users</p>
+              <CheckIcon />
+              <p className="text-gray-700">High-Value User Acquisition</p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p className="text-gray-700">Build trust through education, not hard selling</p>
+              <CheckIcon />
+              <p className="text-gray-700">On-site Product Adoption And Onboarding</p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <p className="text-gray-700">Convert awareness into immediate action and long-term loyalty</p>
+              <CheckIcon />
+              <p className="text-gray-700">Stronger Brand Trust & Emotional Equity</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <CheckIcon />
+              <p className="text-gray-700">Lifetime User Value Over One-Time Signups</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <CheckIcon />
+              <p className="text-gray-700">Cultural & Thought Leadership in Modern Wealth Building</p>
             </div>
           </div>
         </div>
@@ -170,11 +158,15 @@ export default function PartnerPage() {
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-start">
                     <span className="text-yellow-400 mr-2">✓</span>
-                    Opening keynote + panel speaking slot
+                    Opening keynote + Masterclass speaking slot
                   </li>
                   <li className="flex items-start">
                     <span className="text-yellow-400 mr-2">✓</span>
-                    5 VIP passes
+                    7 VIP passes
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-yellow-400 mr-2">✓</span>
+                    3 General Access Tickets
                   </li>
                   <li className="flex items-start">
                     <span className="text-yellow-400 mr-2">✓</span>
@@ -214,7 +206,11 @@ export default function PartnerPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
-                    3 VIP passes
+                    5 VIP passes
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    3 General Access Tickets
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
@@ -227,6 +223,10 @@ export default function PartnerPage() {
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
                     Standard exhibition booth
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Attendee data opt-ins
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
@@ -246,11 +246,19 @@ export default function PartnerPage() {
                 <ul className="space-y-2 text-sm text-gray-100">
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
-                    2 VIP passes
+                    3 VIP passes
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    3 General Access Tickets
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
                     Logo on event website & materials
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Standard Booth
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
@@ -274,7 +282,15 @@ export default function PartnerPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
+                    2 General Access Tickets
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
                     Logo on event website & materials
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-white mr-2">✓</span>
+                    Mini Exhibition Booth
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">✓</span>
@@ -284,7 +300,12 @@ export default function PartnerPage() {
               </div>
             </div>
           </div>
-          <p className="text-center text-gray-500 mt-6 text-sm">
+          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+            <p className="text-center text-green-800 text-sm font-medium">
+              Headline sponsorship is limited to ONE brand to preserve depth and exclusivity.
+            </p>
+          </div>
+          <p className="text-center text-gray-500 mt-4 text-sm">
             Custom partnership options available. Contact us to discuss your specific needs.
           </p>
         </div>
@@ -330,26 +351,6 @@ export default function PartnerPage() {
               <p className="text-gray-600 text-sm">Provide branded resources and tools that attendees can take home.</p>
             </div>
           </div>
-        </div>
-
-        {/* Social Impact Section */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-sm p-8 mb-8 text-white">
-          <h2 className="text-2xl font-bold mb-4 font-melo">Impact Beyond Profit: Social Impact & CSR</h2>
-          <p className="mb-6 opacity-90">
-            Make a difference by donating or sponsoring a ticket for someone who cannot afford to attend.
-            Your contribution helps us create inclusive access to career and wellness resources.
-          </p>
-          <a
-            href={FLUTTERWAVE_DONATION_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            Donate or Sponsor a Ticket
-          </a>
         </div>
 
         {/* Contact Information */}

@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+// Hoisted RegExp to module level (avoids recreation on each request)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Static validation set for O(1) lookups
+const VALID_PARTNERSHIP_TYPES = new Set(['platinum', 'gold', 'silver', 'bronze', 'custom']);
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -15,17 +21,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!EMAIL_REGEX.test(email)) {
       return NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }
       );
     }
 
-    // Validate partnership type
-    const validTypes = ['platinum', 'gold', 'silver', 'bronze', 'custom'];
-    if (!validTypes.includes(partnershipType)) {
+    // Validate partnership type (O(1) Set lookup instead of O(n) array includes)
+    if (!VALID_PARTNERSHIP_TYPES.has(partnershipType)) {
       return NextResponse.json(
         { error: 'Invalid partnership type' },
         { status: 400 }
