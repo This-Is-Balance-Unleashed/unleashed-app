@@ -105,7 +105,7 @@ export default function RootLayout({
         {/* Meta Pixel Code */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
-            function(f,b,e,v,n,t,s)
+            !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
             if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
@@ -122,7 +122,7 @@ export default function RootLayout({
             height="1"
             width="1"
             style={{ display: "none" }}
-            src="https://www.facebook.com/tr?id=1507870444673879&ev=PageView&noscript=1"
+            src="https://www.facebook.com/tr?id=1960375344901383&ev=PageView&noscript=1"
             alt=""
           />
         </noscript>
