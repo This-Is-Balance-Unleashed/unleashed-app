@@ -17,7 +17,8 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unleashed.conference';
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://unleashed.conference";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,7 +26,8 @@ export const metadata: Metadata = {
     default: "Hit Refresh: Career + Wellness Summit 2026 | Lagos, Nigeria",
     template: "%s | Hit Refresh Summit 2026",
   },
-  description: "Join Nigeria's premier career and wellness summit on February 28, 2026. Rooted in purpose, insights from industry leaders, and all-round growth for a sustainable and impactful life. Get your tickets now!",
+  description:
+    "Join Nigeria's premier career and wellness summit on February 28, 2026. Rooted in purpose, insights from industry leaders, and all-round growth for a sustainable and impactful life. Get your tickets now!",
   keywords: [
     "career summit Nigeria",
     "wellness conference Lagos",
@@ -52,7 +54,8 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "Hit Refresh: Career + Wellness Summit 2026",
     title: "Hit Refresh: Career + Wellness Summit 2026 | Lagos, Nigeria",
-    description: "Join Nigeria's premier career and wellness summit on February 28, 2026. Transform your career and well-being with insights from industry leaders.",
+    description:
+      "Join Nigeria's premier career and wellness summit on February 28, 2026. Transform your career and well-being with insights from industry leaders.",
     images: [
       {
         url: "/opengraph-image",
@@ -65,7 +68,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Hit Refresh: Career + Wellness Summit 2026",
-    description: "Join Nigeria's premier career and wellness summit on February 28, 2026 in Lagos.",
+    description:
+      "Join Nigeria's premier career and wellness summit on February 28, 2026 in Lagos.",
     images: ["/opengraph-image"],
     creator: "@balanceunleashd",
   },
@@ -75,9 +79,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   verification: {
@@ -101,7 +105,7 @@ export default function RootLayout({
         {/* Meta Pixel Code */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
-            !function(f,b,e,v,n,t,s)
+            function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
             if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
@@ -109,7 +113,7 @@ export default function RootLayout({
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1507870444673879');
+            fbq('init', '1960375344901383');
             fbq('track', 'PageView');
           `}
         </Script>
@@ -117,7 +121,7 @@ export default function RootLayout({
           <img
             height="1"
             width="1"
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             src="https://www.facebook.com/tr?id=1507870444673879&ev=PageView&noscript=1"
             alt=""
           />
