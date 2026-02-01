@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import { MotivationIcon } from '../icons';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 // Static data moved outside component to prevent recreation on each render
 const features = [
@@ -32,8 +35,10 @@ const noiseTextureStyle = {
 } as const;
 
 export function ValuePropositionSection() {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
   return (
-    <section className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden">
+    <section ref={ref as React.RefObject<HTMLElement>} className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden">
       {/* Noise texture */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
@@ -42,16 +47,17 @@ export function ValuePropositionSection() {
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16">
+        <div className={`max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16 scroll-fade-in ${isVisible ? 'visible' : ''}`}>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold mb-4">
-            This Is Not Another Motivation Rally
+            <span className="text-gradient-primary">Why Wellness Events in Lagos Matter</span>
           </h2>
           {/* Green underline decoration */}
           <MotivationIcon className="absolute top-14 sm:top-10 right-1/10 sm:right-4/15 mx-auto w-48 sm:w-64 md:w-80 hidden sm:block" />
           <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-sans mt-6 sm:mt-8 md:mt-10">
+            Hit Refresh Conference isn&apos;t just another event in Lagos - it&apos;s a wellness movement.
             You&apos;ve been giving your best: your time, your care, your energy. But lately, the
             spark feels dimmer & the days feel heavier. And even when you rest, it doesn&apos;t feel
-            like it&apos;s enough
+            like it&apos;s enough.
           </p>
         </div>
 

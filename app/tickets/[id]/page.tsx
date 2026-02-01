@@ -1,8 +1,10 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
+import { TicketDetailSkeleton } from '@/components/ui/skeleton';
 
 interface TicketDetails {
   id: string;
@@ -31,19 +33,13 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function TicketPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const router = useRouter();
 
   // Fetch ticket details (use different endpoint for actual tickets)
   const { data, error, isLoading } = useSWR<TicketDetails>(`/api/tickets/detail/${id}`, fetcher);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading ticket...</p>
-        </div>
-      </div>
-    );
+    return <TicketDetailSkeleton />;
   }
 
   if (error || !data) {
@@ -65,7 +61,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
           </svg>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Ticket Not Found</h1>
           <p className="text-gray-600 mb-6">
-            The ticket you're looking for doesn't exist or has been removed.
+            The ticket you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Link
             href="/"
@@ -114,9 +110,10 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <Link 
-            href={`/tickets/success?reference=${getBaseReference(data.paystack_reference)}`} 
+          <Link
+            href={`/tickets/success?reference=${getBaseReference(data.paystack_reference)}`}
             className="text-primary hover:underline text-sm"
+            onMouseEnter={() => router.prefetch(`/tickets/success?reference=${getBaseReference(data.paystack_reference)}`)}
           >
             ← Back to Purchase Summary
           </Link>
@@ -125,7 +122,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
         {/* Ticket Card */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Event Header */}
-          <div className="bg-gradient-to-r from-primary to-green-600 text-white px-6 py-8">
+          <div className="bg-linear-to-r from-primary to-green-600 text-white px-6 py-8">
             <h1 className="text-2xl font-bold mb-2 font-melo">{data.event.title}</h1>
             <div className="space-y-1 text-sm opacity-90">
               <p>📅 {formatDate(data.event.event_date)}</p>
@@ -231,7 +228,7 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start space-x-3">
             <svg
-              className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5"
+              className="w-6 h-6 text-blue-600 shrink-0 mt-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

@@ -1,6 +1,10 @@
 import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/ui/event/hero-section';
-import { EventSchema } from '@/components/seo/EventSchema';
+import { AnnouncementBanner } from '@/components/ui/event/announcement-banner';
+import { EventSchema } from '@/components/seo/event-schema';
+import { FAQSchema } from '@/components/seo/faq-schema';
+import { LocalBusinessSchema } from '@/components/seo/local-business-schema';
+import { BreadcrumbSchema } from '@/components/seo/bread-crumb-schema';
 
 // Dynamic imports for below-fold sections to reduce initial bundle size
 const ValuePropositionSection = dynamic(
@@ -23,6 +27,10 @@ const FinalCTASection = dynamic(
   () => import('@/components/ui/event/final-cta-section').then(m => m.FinalCTASection),
   { ssr: true }
 );
+const FAQSection = dynamic(
+  () => import('@/components/ui/event/faq-section').then(m => m.FAQSection),
+  { ssr: true }
+);
 const Footer = dynamic(
   () => import('@/components/ui/event/footer').then(m => m.Footer),
   { ssr: true }
@@ -32,6 +40,19 @@ export default function Home() {
   return (
     <main className="relative">
       <EventSchema />
+      <FAQSchema />
+      <LocalBusinessSchema />
+      <BreadcrumbSchema />
+
+      {/* Announcement Banner */}
+      <AnnouncementBanner
+        message="🎉 Early Bird Special: Use code EARLYBIRD for 20% off all tickets!"
+        ctaText="Get Tickets"
+        ctaLink="#pricing"
+        variant="urgent"
+        dismissible={true}
+      />
+
       <HeroSection />
       <ValuePropositionSection />
       <ExperienceSection />
@@ -60,6 +81,7 @@ export default function Home() {
       <TargetAudienceSection />
       <PricingSection />
       <FinalCTASection />
+      <FAQSection />
       <Footer />
     </main>
   );

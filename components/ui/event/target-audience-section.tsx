@@ -1,4 +1,7 @@
+'use client';
+
 import { CheckmarkIcon, XIcon } from '../icons';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 // Static data moved outside component to prevent recreation on each render
 const forYouList = [
@@ -27,8 +30,10 @@ const noiseTextureStyle = {
 } as const;
 
 export function TargetAudienceSection() {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
   return (
-    <section className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden" style={sectionStyle}>
+    <section ref={ref as React.RefObject<HTMLElement>} className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden" style={sectionStyle}>
       {/* Noise texture */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
@@ -40,9 +45,9 @@ export function TargetAudienceSection() {
         {/* Two Cards Side by Side */}
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
           {/* Green Card - For You */}
-          <div className="relative bg-secondary rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-melo font-semibold text-white mb-4 sm:mb-6 md:mb-8">
-              Hit Refresh is for you if
+          <div className={`relative bg-secondary rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl scroll-fade-in ${isVisible ? 'visible' : ''}`}>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-melo font-semibold mb-4 sm:mb-6 md:mb-8">
+              <span className="text-gradient-orange">Hit Refresh is for you if</span>
             </h2>
 
             <ul className="space-y-3 sm:space-y-4 md:space-y-6">
@@ -79,9 +84,9 @@ export function TargetAudienceSection() {
           </div>
 
           {/* Black Card - Not For You */}
-          <div className="relative bg-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-melo font-semibold text-white mb-4 sm:mb-6 md:mb-8">
-              Hit Refresh is not for you if
+          <div className={`relative bg-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl scroll-fade-in animation-delay-200 ${isVisible ? 'visible' : ''}`}>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-melo font-semibold mb-4 sm:mb-6 md:mb-8">
+              <span className="text-gradient-green">Hit Refresh is not for you if</span>
             </h2>
 
             <ul className="space-y-3 sm:space-y-4 md:space-y-6">

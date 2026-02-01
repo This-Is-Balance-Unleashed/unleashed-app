@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import CancelledContent from './CancelledContent';
+import CancelledContent from './cancelled-content';
 
 export default function TicketCancelledPage() {
   return (

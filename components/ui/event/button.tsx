@@ -23,10 +23,10 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 export function Button({ children, variant = 'primary', size = 'md', className, ...props }: ButtonProps) {
   const classes = clsx(
-    'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 hover:scale-105 active:scale-95',
+    'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 active:scale-95',
     {
       // Variants
-      'bg-primary text-white hover:bg-primary-hover': variant === 'primary',
+      'bg-primary text-white hover:bg-primary-hover btn-primary': variant === 'primary',
       'bg-white text-black hover:bg-white-hover': variant === 'secondary',
       'border-2 border-primary text-primary hover:bg-primary hover:text-white':
         variant === 'outline',

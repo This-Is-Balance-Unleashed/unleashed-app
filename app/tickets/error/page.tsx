@@ -45,7 +45,7 @@ function ErrorContent() {
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
           <div className="flex items-start space-x-3">
             <svg
-              className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5"
+              className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -88,9 +88,12 @@ function ErrorContent() {
           <p className="text-sm text-gray-600 mb-3">
             If the problem persists, please contact your bank or try a different payment method.
           </p>
-          <Link href="/support" className="text-primary hover:underline text-sm font-semibold">
+          <a
+            href="mailto:events@balanceunleashed.org"
+            className="text-primary hover:underline"
+          >
             Contact Support
-          </Link>
+          </a>
         </div>
       </div>
     </div>

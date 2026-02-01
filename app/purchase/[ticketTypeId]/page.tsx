@@ -1,10 +1,27 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 // import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import useSWR from 'swr';
+import { useEasterEggs } from '@/hooks/useEasterEggs';
+import { PurchasePageSkeleton } from '@/components/ui/skeleton';
+
+// Dynamically import Easter egg components to reduce initial bundle size
+const FlyingBird = dynamic(
+  () => import('@/components/ui/easter-eggs/flying-bird').then(m => m.FlyingBird),
+  { ssr: false }
+);
+const SecretHoverZone = dynamic(
+  () => import('@/components/ui/easter-eggs/secret-hover-zone').then(m => m.SecretHoverZone),
+  { ssr: false }
+);
+const EasterEggToast = dynamic(
+  () => import('@/components/ui/easter-eggs/easter-egg-toast').then(m => m.EasterEggToast),
+  { ssr: false }
+);
 
 // interface TicketType {
 //   id: string;
@@ -47,6 +64,9 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
   const [couponInput, setCouponInput] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(30 * 60); // 30 minutes in seconds
   const [isExpired, setIsExpired] = useState(false);
+  const [easterEggFound, setEasterEggFound] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Fetch ticket type and event data using SWR
   const { data, error, isLoading } = useSWR<{
@@ -69,6 +89,52 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
   const event = data?.event || null;
 
   const SERVICE_FEE_PERCENT = 2.5; // 2.5% service fee
+
+  // Easter egg handler - automatically apply EARLYBIRD coupon
+  const handleEasterEggFound = useCallback(async () => {
+    if (easterEggFound || !ticketType) return; // Only trigger once
+
+    setEasterEggFound(true);
+    setToastMessage('EARLYBIRD coupon applied automatically!');
+    setShowToast(true);
+
+    // Auto-apply EARLYBIRD coupon
+    try {
+      const response = await fetch('/api/coupons/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: 'EARLYBIRD',
+          ticket_type_id: ticketType.id,
+          event_id: event?.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.valid) {
+        setCouponDiscount(data);
+        setFormData((prev) => ({ ...prev, couponCode: 'EARLYBIRD' }));
+      }
+    } catch (error) {
+      console.error('Failed to apply easter egg coupon:', error);
+    }
+  }, [easterEggFound, ticketType, event]);
+
+  // Initialize easter eggs
+  const {
+    showBird,
+    birdPosition,
+    isEarlyBirdTime,
+    handleSecretZoneEnter,
+    handleSecretZoneLeave,
+    handleShiftAltClick,
+  } = useEasterEggs({ onEasterEggFound: handleEasterEggFound });
+
+  // Handle clicking the flying bird
+  const handleBirdClick = useCallback(() => {
+    handleEasterEggFound();
+  }, [handleEasterEggFound]);
 
   // Timer effect
   useEffect(() => {
@@ -219,7 +285,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         alert(data.error || 'Invalid coupon code');
         setCouponDiscount(null);
       }
-    } catch (error) {
+    } catch {
       alert('Failed to apply coupon');
     }
   };
@@ -239,14 +305,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading ticket details...</p>
-        </div>
-      </div>
-    );
+    return <PurchasePageSkeleton />;
   }
 
   if (!ticketType || !event) {
@@ -555,7 +614,13 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
             <button
               type="button"
               className="text-primary text-sm hover:underline mb-6 flex items-center space-x-1"
-              onClick={() => setIsCouponDialogOpen(true)}
+              onClick={(e) => {
+                handleShiftAltClick(e);
+                if (!e.defaultPrevented) {
+                  setIsCouponDialogOpen(true);
+                }
+              }}
+              title="Hold Shift + Alt and click for a surprise..."
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -651,6 +716,32 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
           </DialogPanel>
         </div>
       </Dialog>
+
+      {/* Easter Eggs */}
+      <FlyingBird
+        visible={showBird}
+        position={birdPosition}
+        onClick={handleBirdClick}
+      />
+
+      <SecretHoverZone
+        onHoverEnter={handleSecretZoneEnter}
+        onHoverLeave={handleSecretZoneLeave}
+      />
+
+      <EasterEggToast
+        show={showToast}
+        message={toastMessage}
+        onClose={() => setShowToast(false)}
+      />
+
+      {/* Early bird time indicator (subtle hint) */}
+      {isEarlyBirdTime && !easterEggFound && (
+        <div className="fixed bottom-4 left-4 bg-orange-100 border border-orange-300 text-orange-800 px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 z-40 animate-pulse">
+          <span className="text-xl">🌅</span>
+          <span className="text-sm font-medium">Early bird hours active!</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,9 +4,11 @@ export function EventSchema() {
   const eventSchema = {
     '@context': 'https://schema.org',
     '@type': 'Event',
-    name: 'Hit Refresh: Career + Wellness Summit',
+    name: 'Hit Refresh Conference - Career and Wellness Summit',
+    alternateName: 'Hit Refresh Conference',
     description:
-      "Join Nigeria's premier career and wellness summit. Rooted in purpose, insights from industry leaders, and all-round growth for a sustainable and impactful life.",
+      "Hit Refresh Conference is Lagos' premier career and wellness event. Join industry leaders for a transformative day focused on work-life balance, mental wellness, and sustainable career growth in Lagos, Nigeria.",
+    keywords: 'hit refresh conference, events in lagos, wellness events lagos, career summit lagos, wellness conference nigeria',
     startDate: '2026-02-28T08:00:00+01:00',
     endDate: '2026-02-28T16:00:00+01:00',
     eventStatus: 'https://schema.org/EventScheduled',
@@ -18,7 +20,13 @@ export function EventSchema() {
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Lagos',
+          addressRegion: 'Lagos State',
           addressCountry: 'NG',
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: '6.5244',
+          longitude: '3.3792',
         },
       },
       {
