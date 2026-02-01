@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Unleashed App (Hit Refresh Conference)
+
+A Next.js web application for the Hit Refresh Conference - Lagos' premier career and wellness event scheduled for February 28, 2026.
+
+## About
+
+This is the official event website for Hit Refresh Conference, featuring:
+- Event information and registration
+- Ticket purchasing system
+- Sponsor and partner pages
+- QR code generation for tickets
+- Supabase integration for data management
+- Meta Pixel tracking for analytics
+
+## Tech Stack
+
+- **Framework**: Next.js 16 with React 19
+- **Runtime**: Bun (preferred) or Node.js >=20.0.0
+- **Styling**: Tailwind CSS 4
+- **Database**: Supabase
+- **UI Components**: Headless UI
+- **Fonts**: Young Serif, DM Sans
+- **Features**: QR Code generation, SWR for data fetching
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+Then run the development server:
+
+```bash
 bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `bun dev` - Start development server
+- `bun build` - Build for production
+- `bun start` - Start production server
+- `bun lint` - Run ESLint
+- `bun test:webhook` - Test webhook functionality
+- `bun webhook:capture` - Capture webhook events
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+├── app/
+│   ├── api/           # API routes
+│   ├── partner/       # Partner pages
+│   ├── sponsor/       # Sponsor pages
+│   ├── tickets/       # Ticket management
+│   └── purchase/      # Purchase flow
+├── components/        # React components
+│   ├── ui/           # UI components
+│   └── seo/          # SEO components (schemas)
+├── lib/              # Utility functions
+└── scripts/          # Helper scripts
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment Variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create a `.env.local` file with the following variables:
 
-## Deploy on Vercel
+```env
+NEXT_PUBLIC_SITE_URL=https://unleashed.conference
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Event Landing Page**: Hero section, value propositions, experience showcase
+- **Ticketing System**: Secure ticket purchasing with QR code generation
+- **Partner/Sponsor Pages**: Dedicated pages for event partners and sponsors
+- **SEO Optimization**: Comprehensive schema markup for events, FAQs, and local business
+- **Analytics**: Meta Pixel integration for tracking
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+
+## License
+
+Private - All rights reserved
