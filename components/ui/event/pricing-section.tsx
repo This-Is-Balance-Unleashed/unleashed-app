@@ -1,7 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 import { Button } from './button';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useParallax } from '@/hooks/useParallax';
 
 interface TicketProps {
   type: 'general' | 'vip' | 'teams' | 'virtual';
@@ -23,10 +28,16 @@ const bgColors = {
 
 // Memoized TicketCard component to prevent unnecessary re-renders
 const TicketCard = memo(function TicketCard({ type, title, label, description, price, ticketTypeId, className = '' }: TicketProps) {
+  const router = useRouter();
+
   return (
-    <Link href={`/purchase/${ticketTypeId}`} className="block">
+    <Link
+      href={`/purchase/${ticketTypeId}`}
+      className="block"
+      onMouseEnter={() => router.prefetch(`/purchase/${ticketTypeId}`)}
+    >
       <div
-        className={`relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300 ${bgColors[type]} ${className}`}
+        className={`ticket-card ${type === 'vip' ? 'ticket-card-vip' : ''} click-bounce relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl ${bgColors[type]} ${className}`}
       >
       <div className="grid grid-cols-[1fr_auto] min-h-52 sm:min-h-60 md:min-h-70">
         {/* Main Content */}
@@ -142,11 +153,14 @@ const tickets = [
 ];
 
 export function PricingSection() {
+  const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.2 });
+  const parallaxRef = useParallax({ speed: 0.3 });
+
   return (
-    <section className="relative bg-black py-12 sm:py-16 md:py-20 overflow-hidden">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative bg-black py-12 sm:py-16 md:py-20 overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16 relative">
+        <div className={`max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16 relative scroll-fade-in ${isVisible ? 'visible' : ''}`}>
           {/* Right swoosh decoration */}
           <svg
             className="absolute right-19 top-0 w-12 h-12 rotate-30 hidden lg:block"
@@ -164,8 +178,8 @@ export function PricingSection() {
             <path fill="#fff" d="m45.3 54.7.7.8q0-.7-.7-.8" />
           </svg>
 
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold text-white mb-4">
-            Choose Your Experience
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold mb-4">
+            <span className="text-gradient-orange">Choose Your Experience</span>
           </h2>
 
           {/* Choose experience underline */}
@@ -199,8 +213,8 @@ export function PricingSection() {
         </div>
       </div>
 
-      {/* Decorative elements - hidden on mobile */}
-      <div className="absolute bottom-8 left-8 w-12 h-12 sm:w-16 sm:h-16 hidden sm:block">
+      {/* Decorative elements with parallax - hidden on mobile */}
+      <div ref={parallaxRef as React.RefObject<HTMLDivElement>} className="absolute bottom-8 left-8 w-12 h-12 sm:w-16 sm:h-16 hidden sm:block parallax-slow">
         <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="25" cy="25" r="20" fill="var(--color-primary)" opacity="0.3" />
         </svg>

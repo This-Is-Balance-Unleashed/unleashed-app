@@ -59,13 +59,18 @@ export function Footer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 items-start">
             {/* Left Column - Logo & Social */}
             <div className="space-y-6 text-center sm:text-left">
-              <Image
-                src="/logo2.svg"
-                alt="Career + Wellness Summit"
-                width={180}
-                height={60}
-                className="mb-6 sm:mb-8 mx-auto sm:mx-0 w-40 sm:w-48 lg:w-[220px] h-auto"
-              />
+              <div>
+                <Image
+                  src="/logo2.svg"
+                  alt="Hit Refresh Conference - Lagos Wellness Event"
+                  width={180}
+                  height={60}
+                  className="mb-3 mx-auto sm:mx-0 w-40 sm:w-48 lg:w-[220px] h-auto"
+                />
+                <p className="text-sm font-sans text-gray-700 max-w-xs mx-auto sm:mx-0">
+                  Lagos&apos; premier career and wellness conference. Join us for a transformative experience.
+                </p>
+              </div>
 
               {/* Social Media Icons */}
               <div className="flex gap-3 sm:gap-4 justify-center sm:justify-start">
@@ -106,10 +111,13 @@ export function Footer() {
 
             {/* Center Column - Details */}
             <div className="space-y-4 text-center sm:text-left">
-              <h3 className="text-xl sm:text-2xl font-bold font-melo mb-4">Hit Refresh Details</h3>
-              <p className="text-sm sm:text-base font-sans">February 28th, 2026.</p>
+              <h3 className="text-xl sm:text-2xl font-bold font-melo mb-4">Event Details</h3>
               <div className="space-y-2">
-                <p className="text-sm sm:text-base font-sans">Have any questions, reach out to us at</p>
+                <p className="text-sm sm:text-base font-sans"><strong>Date:</strong> February 28th, 2026</p>
+                <p className="text-sm sm:text-base font-sans"><strong>Location:</strong> Lagos, Nigeria</p>
+              </div>
+              <div className="space-y-2 mt-4">
+                <p className="text-sm sm:text-base font-sans">Have any questions?</p>
                 <Link
                   href="mailto:events@balanceunleashed.org"
                   className="text-sm sm:text-base font-medium font-sans hover:text-primary transition-colors break-all"
@@ -146,7 +154,7 @@ export function Footer() {
         <div className="bg-primary py-3 sm:py-4">
           <div className="container mx-auto px-4 sm:px-6">
             <p className="text-center text-white text-xs sm:text-sm md:text-base font-sans">
-              All right reserved. Balance Unleashed © 2026
+              All right reserved. Balance Unleashed © {new Date().getFullYear()}
             </p>
           </div>
         </div>

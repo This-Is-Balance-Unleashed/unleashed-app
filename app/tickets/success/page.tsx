@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { TicketSuccessSkeleton } from '@/components/ui/skeleton';
 
 interface TicketDetails {
   id: string;
@@ -27,6 +28,7 @@ interface VerifyResponse {
 
 function TicketSuccessContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const reference = searchParams.get('reference') || searchParams.get('trxref');
 
   const [ticketsData, setTicketsData] = useState<VerifyResponse | null>(null);
@@ -62,14 +64,7 @@ function TicketSuccessContent() {
   }, [reference]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Verifying your payment...</p>
-        </div>
-      </div>
-    );
+    return <TicketSuccessSkeleton />;
   }
 
   if (error || !ticketsData) {
@@ -201,6 +196,7 @@ function TicketSuccessContent() {
                     <Link
                       href={`/tickets/${ticket.id}`}
                       className="text-primary hover:underline text-sm font-medium"
+                      onMouseEnter={() => router.prefetch(`/tickets/${ticket.id}`)}
                     >
                       View Details →
                     </Link>
@@ -254,6 +250,7 @@ function TicketSuccessContent() {
             <Link
               href={`/tickets/${ticketsData.tickets[0].id}`}
               className="block w-full bg-primary text-white text-center py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+              onMouseEnter={() => router.prefetch(`/tickets/${ticketsData.tickets[0].id}`)}
             >
               View Ticket & QR Code
             </Link>
@@ -266,6 +263,12 @@ function TicketSuccessContent() {
                     window.open(`/tickets/${ticket.id}`, '_blank');
                   });
                 }}
+                onMouseEnter={() => {
+                  // Prefetch all ticket pages on hover
+                  ticketsData.tickets.forEach((ticket) => {
+                    router.prefetch(`/tickets/${ticket.id}`);
+                  });
+                }}
                 className="block w-full bg-primary text-white text-center py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
               >
                 View All {ticketsData.tickets_count} Tickets
@@ -276,6 +279,7 @@ function TicketSuccessContent() {
                     key={ticket.id}
                     href={`/tickets/${ticket.id}`}
                     className="block w-full border-2 border-primary text-primary text-center py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors"
+                    onMouseEnter={() => router.prefetch(`/tickets/${ticket.id}`)}
                   >
                     View Ticket #{index + 1}
                   </Link>
@@ -297,16 +301,7 @@ function TicketSuccessContent() {
 
 export default function TicketSuccessPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<TicketSuccessSkeleton />}>
       <TicketSuccessContent />
     </Suspense>
   );

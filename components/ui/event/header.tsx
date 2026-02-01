@@ -38,6 +38,7 @@ export function Header() {
           {navigation.map((item) => (
             <Link
               key={item.name}
+              // @ts-expect-error unknown type
               href={item.href}
               className="text-sm lg:text-base font-medium text-gray-800 hover:text-primary transition-colors"
             >
@@ -143,6 +144,7 @@ export function Header() {
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
+                      // @ts-expect-error unknown
                       href={item.href}
                       className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
                       onClick={() => setMobileMenuOpen(false)}

@@ -1,4 +1,7 @@
+'use client';
+
 import { Button } from './button';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 // Style constants to prevent object recreation on each render
 const sectionGradientStyle = {
@@ -11,8 +14,10 @@ const noiseTextureStyle = {
 } as const;
 
 export function FinalCTASection() {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.3 });
+
   return (
-    <section className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden" style={sectionGradientStyle}>
+    <section ref={ref as React.RefObject<HTMLElement>} className="relative bg-primary-light py-12 sm:py-16 md:py-20 overflow-hidden" style={sectionGradientStyle}>
       {/* Noise texture */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
@@ -22,7 +27,7 @@ export function FinalCTASection() {
       <div className="relative z-10 container mx-auto px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           {/* Large Green Rounded Card */}
-          <div className="relative bg-secondary rounded-2xl sm:rounded-3xl md:rounded-[3rem] p-6 sm:p-10 md:p-12 lg:p-16 overflow-hidden">
+          <div className={`relative bg-secondary rounded-2xl sm:rounded-3xl md:rounded-[3rem] p-6 sm:p-10 md:p-12 lg:p-16 overflow-hidden scroll-fade-in ${isVisible ? 'visible' : ''}`}>
             {/* Blue decorative swooshes (left side) - hidden on small screens */}
             <div className="absolute left-4 bottom-4 sm:left-8 sm:bottom-8 md:left-16 md:bottom-16 hidden sm:block">
               <svg

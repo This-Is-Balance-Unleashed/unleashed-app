@@ -1,6 +1,10 @@
+'use client';
+
 import Image from "next/image";
 import { Button } from "./button";
 import { ZigzagIcon, WIcon, TinglesIcon } from "../icons";
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useParallax } from '@/hooks/useParallax';
 
 // Static data moved outside component to prevent recreation on each render
 const experiences = [
@@ -33,17 +37,21 @@ const whiteNoiseTextureStyle = {
 } as const;
 
 export function ExperienceSection() {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+  const parallaxRef = useParallax({ speed: 0.4 });
+
   return (
-    <section className="relative bg-black py-12 sm:py-16 md:py-20 overflow-hidden">
+    <section ref={ref as React.RefObject<HTMLElement>} className="relative bg-black py-12 sm:py-16 md:py-20 overflow-hidden">
       {/* White noise texture */}
       <div
         className="absolute inset-0 pointer-events-none opacity-20"
         style={whiteNoiseTextureStyle}
       />
 
-      {/* Decorative swoosh top right - hidden on mobile */}
+      {/* Decorative swoosh top right with parallax - hidden on mobile */}
       <svg
-        className="absolute top-8 right-8 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 text-secondary hidden sm:block"
+        ref={parallaxRef as React.RefObject<SVGSVGElement>}
+        className="absolute top-8 right-8 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 text-secondary hidden sm:block parallax-slow"
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -59,9 +67,9 @@ export function ExperienceSection() {
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold text-white mb-4">
-            What You Will Experience
+        <div className={`max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16 scroll-fade-in ${isVisible ? 'visible' : ''}`}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold mb-4">
+            <span className="text-gradient-green">What You Will Experience</span>
           </h2>
           {/* Orange wavy underline */}
           <ZigzagIcon className="absolute right-1/10 sm:right-32/100 top-10 sm:top-13 -rotate-1 mx-auto w-48 sm:w-64 md:w-65 mb-6 hidden sm:block" />
