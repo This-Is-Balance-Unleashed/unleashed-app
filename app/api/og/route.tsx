@@ -2,6 +2,16 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
+// Theme colors matching globals.css
+const THEME_COLORS = {
+  primary: '#FFA500',      // Orange - oklch(68% 0.18 50)
+  secondary: '#39B54A',    // Green - oklch(68% 0.15 155)
+  black: '#000000',        // Black
+  white: '#FFFFFF',        // White
+  background: '#0A0A0A',   // Dark background for contrast
+  textMuted: '#A1A1A1',    // Muted text
+};
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -20,7 +30,7 @@ export async function GET(request: Request) {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#1a1a1a',
+            backgroundColor: THEME_COLORS.background,
             padding: '60px 80px',
             fontFamily: 'system-ui, sans-serif',
           }}
@@ -45,14 +55,14 @@ export async function GET(request: Request) {
                 style={{
                   width: '8px',
                   height: '8px',
-                  backgroundColor: '#7C3AED',
+                  backgroundColor: THEME_COLORS.primary,
                   marginRight: '12px',
                   display: 'flex',
                 }}
               />
               <div
                 style={{
-                  color: '#fff',
+                  color: THEME_COLORS.white,
                   fontSize: '20px',
                   fontWeight: '400',
                   letterSpacing: '0.5px',
@@ -74,7 +84,7 @@ export async function GET(request: Request) {
                 style={{
                   fontSize: '72px',
                   fontWeight: '700',
-                  color: '#fff',
+                  color: THEME_COLORS.secondary,
                   lineHeight: '1',
                   marginBottom: '10px',
                   display: 'flex',
@@ -86,7 +96,7 @@ export async function GET(request: Request) {
                 style={{
                   fontSize: '56px',
                   fontWeight: '700',
-                  background: 'linear-gradient(90deg, #7C3AED 0%, #14B8A6 100%)',
+                  background: `linear-gradient(135deg, ${THEME_COLORS.primary} 0%, ${THEME_COLORS.secondary} 100%)`,
                   backgroundClip: 'text',
                   color: 'transparent',
                   lineHeight: '1.1',
@@ -99,7 +109,7 @@ export async function GET(request: Request) {
 
             <div
               style={{
-                color: '#a1a1a1',
+                color: THEME_COLORS.textMuted,
                 fontSize: '24px',
                 fontWeight: '400',
                 letterSpacing: '0.5px',
@@ -118,16 +128,15 @@ export async function GET(request: Request) {
               flexWrap: 'wrap',
               width: '45%',
               height: '100%',
-              background:
-                'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%)',
+              background: `linear-gradient(135deg, ${THEME_COLORS.primary}19 0%, ${THEME_COLORS.secondary}19 100%)`, // 19 = 10% opacity in hex
             }}
           >
             {/* Generate checkered pattern blocks */}
             {Array.from({ length: 48 }).map((_, index) => {
               const row = Math.floor(index / 6);
               const col = index % 6;
-              const isPurple = (row + col) % 3 === 0;
-              const isTeal = (row + col) % 3 === 1;
+              const isOrange = (row + col) % 3 === 0;
+              const isGreen = (row + col) % 3 === 1;
               const isDotted = (row + col) % 2 === 0;
 
               return (
@@ -136,11 +145,11 @@ export async function GET(request: Request) {
                   style={{
                     width: '16.666%',
                     height: '12.5%',
-                    backgroundColor: isPurple
-                      ? '#7C3AED'
-                      : isTeal
-                      ? '#14B8A6'
-                      : '#fff',
+                    backgroundColor: isOrange
+                      ? THEME_COLORS.primary
+                      : isGreen
+                      ? THEME_COLORS.secondary
+                      : THEME_COLORS.white,
                     opacity: isDotted ? 0.9 : 0.3,
                     display: 'flex',
                   }}
