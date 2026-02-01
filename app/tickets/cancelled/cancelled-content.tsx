@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function CancelledContent() {
   const searchParams = useSearchParams();
-  const reference = searchParams.get('reference') || searchParams.get('trxref');
+  const reference = searchParams.get("reference") || searchParams.get("trxref");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -26,15 +26,19 @@ export default function CancelledContent() {
           </svg>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Cancelled</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          Payment Cancelled
+        </h1>
         <p className="text-gray-600 mb-6">
-          You cancelled the payment process. Your order was not completed and no charges were made.
+          You cancelled the payment process. Your order was not completed and no
+          charges were made.
         </p>
 
         {reference && (
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <p className="text-sm text-gray-600">
-              Reference: <span className="font-mono text-gray-900">{reference}</span>
+              Reference:{" "}
+              <span className="font-mono text-gray-900">{reference}</span>
             </p>
           </div>
         )}
@@ -56,10 +60,13 @@ export default function CancelledContent() {
 
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600">
-            Need help?{' '}
-            <Link href="/support" className="text-primary hover:underline">
+            Need help?{" "}
+            <a
+              href="mailto:events@balanceunleashed.org"
+              className="text-primary hover:underline"
+            >
               Contact Support
-            </Link>
+            </a>
           </p>
         </div>
       </div>

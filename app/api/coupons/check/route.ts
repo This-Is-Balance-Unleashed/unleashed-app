@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       discount_value: coupon.discount_value,
       coupon_id: coupon.id,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Invalid request' },
       { status: 400 }

@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   typedRoutes: true,
   typescript: {
-    ignoreBuildErrors: true,
+    // ignoreBuildErrors: true,
   },
   serverExternalPackages: [],
   reactCompiler: true,

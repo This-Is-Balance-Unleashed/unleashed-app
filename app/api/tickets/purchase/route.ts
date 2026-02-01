@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     }
 
     // Calculate price for the quantity of tickets
-    let pricePerTicket = ticketType.price_in_kobo;
+    const pricePerTicket = ticketType.price_in_kobo;
     let finalPrice = pricePerTicket * quantity;
     let validCouponId = null;
     const actualEventId = ticketType.events.id;
@@ -166,7 +166,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: data.data.authorization_url });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

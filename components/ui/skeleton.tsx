@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
+type SkeletonProps = React.HTMLAttributes<HTMLDivElement>
 
 export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
@@ -14,7 +14,7 @@ export function Skeleton({ className, ...props }: SkeletonProps) {
 // Ticket Success Page Skeleton
 export function TicketSuccessSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-12 px-4">
+    <div className="min-h-screen bg-linear-to-b from-green-50 to-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Success Header Skeleton */}
         <div className="text-center mb-8">
@@ -43,7 +43,7 @@ export function TicketSuccessSkeleton() {
         {/* Info Box Skeleton */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
           <div className="flex items-start space-x-3">
-            <Skeleton className="w-6 h-6 rounded-full flex-shrink-0" />
+            <Skeleton className="w-6 h-6 rounded-full shrink-0" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-4 w-full" />
@@ -115,7 +115,7 @@ export function TicketDetailSkeleton() {
         {/* Info Box Skeleton */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start space-x-3">
-            <Skeleton className="w-6 h-6 rounded-full flex-shrink-0" />
+            <Skeleton className="w-6 h-6 rounded-full shrink-0" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />

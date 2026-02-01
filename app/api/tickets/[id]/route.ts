@@ -45,7 +45,7 @@ export async function GET(
       event_id: ticketType.event_id,
       event: ticketType.events,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

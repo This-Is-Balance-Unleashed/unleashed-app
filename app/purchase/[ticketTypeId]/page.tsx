@@ -285,7 +285,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         alert(data.error || 'Invalid coupon code');
         setCouponDiscount(null);
       }
-    } catch (error) {
+    } catch {
       alert('Failed to apply coupon');
     }
   };

@@ -65,7 +65,7 @@ export function Footer() {
                   alt="Hit Refresh Conference - Lagos Wellness Event"
                   width={180}
                   height={60}
-                  className="mb-3 mx-auto sm:mx-0 w-40 sm:w-48 lg:w-[220px] h-auto"
+                  className="mb-3 mx-auto sm:mx-0 w-40 sm:w-48 lg:w-55 h-auto"
                 />
                 <p className="text-sm font-sans text-gray-700 max-w-xs mx-auto sm:mx-0">
                   Lagos&apos; premier career and wellness conference. Join us for a transformative experience.
