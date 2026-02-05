@@ -9,7 +9,7 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useParallax } from '@/hooks/useParallax';
 
 interface TicketProps {
-  type: 'general' | 'vip' | 'teams' | 'virtual';
+  type: 'general' | 'vip' | 'teams' | 'teams-vip' | 'group' | 'virtual';
   title: string;
   label: string;
   description: string;
@@ -23,6 +23,8 @@ const bgColors = {
   general: 'bg-white border-4 border-blue-500',
   vip: 'bg-yellow-400',
   teams: 'bg-black text-white',
+  'teams-vip': 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black',
+  group: 'bg-gradient-to-br from-green-500 to-green-700 text-white',
   virtual: 'bg-secondary text-white',
 } as const;
 
@@ -33,13 +35,13 @@ const TicketCard = memo(function TicketCard({ type, title, label, description, p
   return (
     <Link
       href={`/purchase/${ticketTypeId}`}
-      className="block"
+      className="block h-full"
       onMouseEnter={() => router.prefetch(`/purchase/${ticketTypeId}`)}
     >
       <div
-        className={`ticket-card ${type === 'vip' ? 'ticket-card-vip' : ''} click-bounce relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl ${bgColors[type]} ${className}`}
+        className={`ticket-card ${type === 'vip' || type === 'teams-vip' ? 'ticket-card-vip' : ''} click-bounce relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl h-full ${bgColors[type]} ${className}`}
       >
-      <div className="grid grid-cols-[1fr_auto] min-h-52 sm:min-h-60 md:min-h-70">
+      <div className="grid grid-cols-[1fr_auto] min-h-52 sm:min-h-60 md:min-h-70 h-full">
         {/* Main Content */}
         <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-between">
           {/* Header */}
@@ -47,7 +49,7 @@ const TicketCard = memo(function TicketCard({ type, title, label, description, p
             <Image src="/icon-logo.svg" alt="Logo" width={40} height={40} className="w-8 h-8 sm:w-10 sm:h-10" />
             <span
               className={`text-[10px] sm:text-xs md:text-sm font-medium px-2 sm:px-3 py-1 rounded ${
-                type === 'general' || type === 'vip' ? 'text-black' : 'text-white opacity-70'
+                type === 'general' || type === 'vip' || type === 'teams-vip' ? 'text-black' : 'text-white opacity-70'
               }`}
             >
               {label}
@@ -59,11 +61,13 @@ const TicketCard = memo(function TicketCard({ type, title, label, description, p
             <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold font-melo mb-2 sm:mb-3">{title}</h3>
             <p
               className={`text-xs sm:text-sm md:text-base leading-relaxed font-sans ${
-                type === 'teams' || type === 'virtual'
+                type === 'teams' || type === 'virtual' || type === 'group'
                   ? 'text-gray-200'
                   : type === 'vip'
                     ? 'text-gray-800'
-                    : 'text-gray-600'
+                    : type === 'teams-vip'
+                      ? 'text-gray-900'
+                      : 'text-gray-600'
               }`}
             >
               {description}
@@ -98,7 +102,7 @@ const TicketCard = memo(function TicketCard({ type, title, label, description, p
                   // eslint-disable-next-line react-hooks/purity
                   width={Math.random() > 0.5 ? 3 : 5}
                   height="200"
-                  fill={type === 'teams' || type === 'virtual' ? 'white' : 'black'}
+                  fill={type === 'teams' || type === 'virtual' || type === 'group' ? 'white' : 'black'}
                   opacity={0.8}
                 />
               ))}
@@ -138,9 +142,25 @@ const tickets = [
     type: 'teams' as const,
     title: 'Corporate Refresh',
     label: 'Teams',
-    description: '5–8 General Admission tickets + Reserved team seating area += Post-summit "Career Wellness Audit" report',
+    description: 'Admits 8 people + Company Logo + Reserved team seating + Post-summit audit + Team photography + Dedicated support',
     price: '₦70,000',
     ticketTypeId: '00000000-0000-0000-0001-000000000003',
+  },
+  {
+    type: 'teams-vip' as const,
+    title: 'Corporate VIP',
+    label: 'Teams VIP',
+    description: 'Admits 4 VIP attendees + Company Logo + Reserved team seating + Post-summit audit + Team photography + Dedicated support',
+    price: '₦70,000',
+    ticketTypeId: '00000000-0000-0000-0001-000000000005',
+  },
+  {
+    type: 'group' as const,
+    title: 'Group Refresh',
+    label: 'Friends Discount',
+    description: 'Admits 6 people (Buy 5, Get 1 Free!) + Reserved group seating. Perfect for friends coming together.',
+    price: '₦50,000',
+    ticketTypeId: '00000000-0000-0000-0001-000000000006',
   },
   {
     type: 'virtual' as const,

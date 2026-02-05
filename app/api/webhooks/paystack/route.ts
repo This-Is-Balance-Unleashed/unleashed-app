@@ -29,24 +29,72 @@ export async function POST(request: Request) {
       // Get quantity from metadata (default to 1 if not provided for backwards compatibility)
       const quantity = metadata.quantity || 1;
 
-      // 2. Find reserved tickets for this transaction
-      const { data: reservedTickets, error: fetchError } = await supabaseAdmin
-        .from('tickets')
-        .select('*')
-        .eq('status', 'reserved')
-        .like('paystack_reference', `${reference}-%`);
+      // Check if this is a group booking
+      const isGroupBooking = metadata.booking_type && metadata.group_booking_id;
 
-      if (fetchError) {
-        throw fetchError;
-      }
+      // Variable to store tickets for email sending
+      let reservedTickets: any[] | null = null;
 
-      if (!reservedTickets || reservedTickets.length === 0) {
-        // Don't throw error - just skip ticket operations
-        // This handles test webhooks and maintains backwards compatibility
+      // Handle group bookings differently
+      if (isGroupBooking) {
+        // 2a. Update group booking status to paid
+        const { error: updateGroupError } = await supabaseAdmin
+          .from('group_bookings')
+          .update({ status: 'paid' })
+          .eq('id', metadata.group_booking_id);
+
+        if (updateGroupError) {
+          throw updateGroupError;
+        }
+
+        // 2b. Create individual tickets for the group
+        const ticketsToCreate = [];
+        for (let i = 0; i < quantity; i++) {
+          const ticketSecret = `${reference}::${metadata.event_id}::ticket-${i + 1}`;
+
+          ticketsToCreate.push({
+            event_id: metadata.event_id,
+            ticket_type_id: metadata.ticket_type_id,
+            email: customer.email,
+            name: metadata.primary_contact || customer.email.split('@')[0],
+            paystack_reference: `${reference}-${i + 1}`,
+            status: 'paid',
+            ticket_secret: ticketSecret,
+            price_paid: Math.round(amount / quantity),
+            group_booking_id: metadata.group_booking_id,
+          });
+        }
+
+        const { data: createdTickets, error: createError } = await supabaseAdmin
+          .from('tickets')
+          .insert(ticketsToCreate)
+          .select();
+
+        if (createError) {
+          throw createError;
+        }
+
+        reservedTickets = createdTickets;
       } else {
+        // 2. Find reserved tickets for this transaction (regular tickets)
+        const { data: foundTickets, error: fetchError } = await supabaseAdmin
+          .from('tickets')
+          .select('*')
+          .eq('status', 'reserved')
+          .like('paystack_reference', `${reference}-%`);
 
-        // 3. Update all reserved tickets to paid status in parallel (QR codes generated in verify endpoint)
-        const ticketUpdatePromises = reservedTickets.map((ticket, i) => {
+        if (fetchError) {
+          throw fetchError;
+        }
+
+        if (!foundTickets || foundTickets.length === 0) {
+          // Don't throw error - just skip ticket operations
+          // This handles test webhooks and maintains backwards compatibility
+        } else {
+          reservedTickets = foundTickets;
+
+          // 3. Update all reserved tickets to paid status in parallel (QR codes generated in verify endpoint)
+          const ticketUpdatePromises = reservedTickets.map((ticket, i) => {
           // Generate ticket_secret for verification (QR code will be generated in verify endpoint)
           const ticketSecret = `${reference}::${metadata.event_id}::ticket-${i + 1}`;
 
@@ -61,10 +109,11 @@ export async function POST(request: Request) {
             .eq('id', ticket.id);
         });
 
-        const updateResults = await Promise.all(ticketUpdatePromises);
-        const updateError = updateResults.find(result => result.error)?.error;
-        if (updateError) {
-          throw updateError;
+          const updateResults = await Promise.all(ticketUpdatePromises);
+          const updateError = updateResults.find(result => result.error)?.error;
+          if (updateError) {
+            throw updateError;
+          }
         }
       }
 

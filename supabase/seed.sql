@@ -78,6 +78,53 @@ Includes:
     4
   );
 
+-- ============================================================================
+-- MIGRATION: 2026-02-04 - New Group & Corporate VIP Ticket Types
+-- ============================================================================
+
+-- Insert new ticket types for group bookings
+INSERT INTO ticket_types (id, event_id, name, description, price_in_kobo, max_quantity, sold_quantity, is_available, sort_order)
+VALUES
+  -- Corporate VIP (4 VIP tickets)
+  (
+    '00000000-0000-0000-0001-000000000005',
+    '00000000-0000-0000-0000-000000000001',
+    'Corporate VIP',
+    'Premium corporate package with VIP access for your team.
+Includes:
+- Admits 4 people (VIP Access)
+- All VIP perks for each attendee
+- Company logo featured in "Corporate Partners" section
+- Reserved VIP team seating area
+- Post-summit "Career Wellness Audit" report
+- Team photo opportunity
+- Dedicated support contact',
+    7000000, -- ₦70,000.00
+    15,      -- Limited quantity for VIP corporate
+    0,
+    true,
+    5
+  ),
+  -- Group Refresh (6 General Access tickets)
+  (
+    '00000000-0000-0000-0001-000000000006',
+    '00000000-0000-0000-0000-000000000001',
+    'Group Refresh',
+    'Perfect for friends coming together! Buy 5, Get 1 Free.
+Includes:
+- Admits 6 people (General Access)
+- Save ₦10,000 compared to individual tickets
+- Reserved group seating area
+- Networking opportunities
+- Access to all sessions and two Masterclasses',
+    5000000, -- ₦50,000.00
+    30,      -- Limited group tickets
+    0,
+    true,
+    6
+  )
+ON CONFLICT (id) DO NOTHING; -- Skip if tickets already exist
+
 -- Insert sample coupons
 INSERT INTO coupons (code, discount_type, discount_value, is_active, expires_at, max_uses, event_id)
 VALUES

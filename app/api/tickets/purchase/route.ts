@@ -91,7 +91,10 @@ export async function POST(request: Request) {
     const customerFullName = `${first_name} ${last_name}`;
 
     // Generate a unique reference with test_ prefix for localhost/development
-    const origin = request.headers.get('origin') || '';
+    const origin = request.headers.get('origin') ||
+                   process.env.NEXT_PUBLIC_BASE_URL ||
+                   process.env.NEXT_PUBLIC_SITE_URL ||
+                   'http://localhost:3000';
     const isDevelopment =
       origin.includes('localhost') ||
       origin.includes('127.0.0.1') ||
@@ -124,7 +127,7 @@ export async function POST(request: Request) {
           }
         ]
       },
-      callback_url: `${request.headers.get('origin')}/tickets/success`,
+      callback_url: `${origin}/tickets/success`,
     };
 
     const paystackResponse = await fetch('https://api.paystack.co/transaction/initialize', {

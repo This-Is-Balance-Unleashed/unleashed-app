@@ -1,6 +1,13 @@
 'use client';
 
 import { useState, useEffect, use, useCallback } from 'react';
+import { useActionState } from 'react';
+import {
+  initialFormState,
+  mergeForm,
+  useForm,
+  useTransform,
+} from '@tanstack/react-form-nextjs';
 import dynamic from 'next/dynamic';
 // import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,6 +15,9 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import useSWR from 'swr';
 import { useEasterEggs } from '@/hooks/useEasterEggs';
 import { PurchasePageSkeleton } from '@/components/ui/skeleton';
+import { purchaseTicketAction } from '../purchase-action';
+import { purchaseFormOptions } from '../purchase-form-options';
+import { GroupCheckoutForm } from '@/components/forms/group-checkout-form';
 
 // Dynamically import Easter egg components to reduce initial bundle size
 const FlyingBird = dynamic(
@@ -40,10 +50,36 @@ interface Event {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+// Helper to determine if ticket is a group/corporate ticket
+const isGroupOrCorporateTicket = (ticketTypeId: string) => {
+  return ticketTypeId.endsWith('000000000003') || // Corporate Refresh
+         ticketTypeId.endsWith('000000000005') || // Corporate VIP
+         ticketTypeId.endsWith('000000000006');   // Group Refresh
+};
+
+// Helper to get booking details for group/corporate tickets
+// Returns the number of members per ticket package
+const getGroupBookingDetails = (ticketTypeId: string) => {
+  if (ticketTypeId.endsWith('000000000003')) {
+    return { type: 'corporate' as const, membersPerTicket: 8 }; // Corporate Refresh: 8 members per ticket
+  } else if (ticketTypeId.endsWith('000000000005')) {
+    return { type: 'corporate' as const, membersPerTicket: 4 }; // Corporate VIP: 4 members per ticket
+  } else if (ticketTypeId.endsWith('000000000006')) {
+    return { type: 'group' as const, membersPerTicket: 6 }; // Group Refresh: 6 members per ticket
+  }
+  return null;
+};
+
 export default function PurchasePage({ params }: { params: Promise<{ ticketTypeId: string }> }) {
   const { ticketTypeId } = use(params);
   // const router = useRouter();
   const [step, setStep] = useState<'details' | 'payment'>('details');
+  const [state, action] = useActionState(purchaseTicketAction, initialFormState);
+
+  const form = useForm({
+    ...purchaseFormOptions,
+    transform: useTransform((baseForm) => mergeForm(baseForm, state!), [state]),
+  });
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -89,6 +125,15 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
   const event = data?.event || null;
 
   const SERVICE_FEE_PERCENT = 2.5; // 2.5% service fee
+
+  // Handle redirect to payment URL
+  useEffect(() => {
+    if (state && 'success' in state && state.success && 'paymentUrl' in state) {
+      if (typeof window !== 'undefined') {
+        window.location.href = state.paymentUrl as string;
+      }
+    }
+  }, [state]);
 
   // Easter egg handler - automatically apply EARLYBIRD coupon
   const handleEasterEggFound = useCallback(async () => {
@@ -220,7 +265,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (step === 'details') {
@@ -228,35 +273,16 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         setStep('payment');
       }
     } else {
-      // Payment step - call purchase API
-      calculatePrices();
+      // Payment step - sync form data to TanStack Form and submit
+      form.setFieldValue('firstName', formData.firstName);
+      form.setFieldValue('lastName', formData.lastName);
+      form.setFieldValue('email', formData.email);
+      form.setFieldValue('careerCategory', formData.careerCategory);
+      form.setFieldValue('quantity', formData.quantity);
+      form.setFieldValue('couponCode', formData.couponCode);
 
-      try {
-        const response = await fetch('/api/tickets/purchase', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: formData.email,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            event_id: event?.id,
-            ticket_type_id: ticketType?.id,
-            quantity: formData.quantity,
-            coupon_code: formData.couponCode || undefined,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.url) {
-          // Redirect to Paystack
-          window.location.href = data.url;
-        } else {
-          alert(data.error || 'Failed to initialize payment');
-        }
-      } catch (error) {
-        alert('An error occurred. Please try again.');
-      }
+      // Trigger form submission which will call the server action
+      form.handleSubmit();
     }
   };
 
@@ -286,7 +312,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         setCouponDiscount(null);
       }
     } catch {
-      alert('Failed to apply coupon');
+      console.log('Failed to apply coupon');
     }
   };
 
@@ -319,6 +345,24 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         </div>
       </div>
     );
+  }
+
+  // Check if this is a group/corporate ticket and render appropriate form
+  if (isGroupOrCorporateTicket(ticketTypeId)) {
+    const bookingDetails = getGroupBookingDetails(ticketTypeId);
+
+    if (bookingDetails) {
+      return (
+        <GroupCheckoutForm
+          ticketTypeId={ticketType.id}
+          ticketTypeName={ticketType.name}
+          basePrice={ticketType.price_in_kobo}
+          membersPerTicket={bookingDetails.membersPerTicket}
+          bookingType={bookingDetails.type}
+          event={event}
+        />
+      );
+    }
   }
 
   if (isExpired) {
@@ -363,7 +407,10 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         <div className="grid lg:grid-cols-[1fr_400px] gap-8">
           {/* Form Section */}
           <div className="bg-white rounded-lg shadow-sm p-8">
-            <form onSubmit={handleSubmit}>
+            <form action={action as never}>
+              {/* Hidden fields for server action */}
+              <input type="hidden" name="eventId" value={event?.id || ''} />
+              <input type="hidden" name="ticketTypeId" value={ticketType?.id || ''} />
               {/* Step 1: Details */}
               {step === 'details' && (
                 <>
@@ -512,6 +559,13 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
               {/* Step 2: Payment */}
               {step === 'payment' && (
                 <>
+                  {/* Error Display */}
+                  {state && 'error' in state && state.error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                      {state.error as string}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center space-x-3">
                       <svg

@@ -238,3 +238,146 @@ CREATE POLICY "Service role has full access to tickets"
 CREATE POLICY "Service role has full access to partnership_inquiries"
   ON partnership_inquiries FOR ALL
   USING (auth.role() = 'service_role');
+
+-- ============================================================================
+-- MIGRATION: 2026-02-04 - Group Booking System (Corporate & Group Tickets)
+-- ============================================================================
+-- Adds support for:
+-- - Corporate Refresh (8 general tickets, ₦70k)
+-- - Corporate VIP (4 VIP tickets, ₦70k)
+-- - Group Refresh (6 general tickets, ₦50k)
+-- Features: bulk purchases, volume discounts, optional member collection
+-- ============================================================================
+
+-- Group Bookings table (for corporate and group tickets)
+CREATE TABLE IF NOT EXISTS group_bookings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  booking_reference TEXT UNIQUE NOT NULL,
+  booking_type TEXT CHECK (booking_type IN ('corporate', 'group')) NOT NULL,
+
+  -- Corporate-specific fields
+  company_name TEXT,
+  company_logo_url TEXT,
+
+  -- Group-specific fields
+  group_name TEXT,
+
+  -- Common contact fields
+  primary_contact_name TEXT NOT NULL,
+  primary_contact_email TEXT NOT NULL,
+  primary_contact_phone TEXT,
+
+  -- Selected perks (for corporate tickets)
+  selected_perks JSONB,
+  team_preferences TEXT,
+
+  -- Purchase details
+  ticket_type_id UUID REFERENCES ticket_types(id) NOT NULL,
+  quantity INTEGER NOT NULL,
+  total_price_paid INTEGER NOT NULL,
+  discount_applied INTEGER DEFAULT 0,
+
+  -- Payment tracking
+  paystack_reference TEXT UNIQUE,
+  status TEXT CHECK (status IN ('pending', 'paid', 'failed')) DEFAULT 'pending',
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add group_booking_id to tickets table
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS group_booking_id UUID REFERENCES group_bookings(id) ON DELETE CASCADE;
+
+-- Group Members table (for optional member details collected at checkout)
+CREATE TABLE IF NOT EXISTS group_members (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  group_booking_id UUID REFERENCES group_bookings(id) ON DELETE CASCADE NOT NULL,
+
+  name TEXT,
+  email TEXT,
+
+  is_primary_contact BOOLEAN DEFAULT FALSE,
+  member_position INTEGER NOT NULL,
+
+  -- Link to assigned ticket (nullable - assigned later)
+  assigned_ticket_id UUID REFERENCES tickets(id) ON DELETE SET NULL,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for group bookings
+CREATE INDEX IF NOT EXISTS idx_group_bookings_reference ON group_bookings(booking_reference);
+CREATE INDEX IF NOT EXISTS idx_group_bookings_email ON group_bookings(primary_contact_email);
+CREATE INDEX IF NOT EXISTS idx_group_bookings_status ON group_bookings(status);
+CREATE INDEX IF NOT EXISTS idx_group_bookings_paystack_reference ON group_bookings(paystack_reference);
+
+-- Indexes for group members
+CREATE INDEX IF NOT EXISTS idx_group_members_booking_id ON group_members(group_booking_id);
+CREATE INDEX IF NOT EXISTS idx_group_members_email ON group_members(email);
+CREATE INDEX IF NOT EXISTS idx_group_members_ticket_id ON group_members(assigned_ticket_id);
+
+-- Index for tickets group_booking_id
+CREATE INDEX IF NOT EXISTS idx_tickets_group_booking_id ON tickets(group_booking_id);
+
+-- Trigger to auto-update updated_at on group_bookings table
+CREATE TRIGGER update_group_bookings_updated_at
+  BEFORE UPDATE ON group_bookings
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable RLS on group tables
+ALTER TABLE group_bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE group_members ENABLE ROW LEVEL SECURITY;
+
+-- Group Bookings Policies
+-- Service role has full access (for API routes and webhooks)
+CREATE POLICY "Service role has full access to group_bookings"
+  ON group_bookings FOR ALL
+  USING (auth.role() = 'service_role');
+
+-- Users can view their own group bookings
+CREATE POLICY "Users can view own group bookings"
+  ON group_bookings FOR SELECT
+  USING (primary_contact_email = auth.jwt()->>'email');
+
+-- Organizers can view group bookings for their events
+CREATE POLICY "Organizers can view event group bookings"
+  ON group_bookings FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM events e
+      JOIN ticket_types tt ON tt.event_id = e.id
+      WHERE tt.id = group_bookings.ticket_type_id
+      AND e.organizer_id = auth.uid()
+    )
+  );
+
+-- Group Members Policies
+-- Service role has full access
+CREATE POLICY "Service role has full access to group_members"
+  ON group_members FOR ALL
+  USING (auth.role() = 'service_role');
+
+-- Users can view members in their group bookings
+CREATE POLICY "Users can view own group members"
+  ON group_members FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM group_bookings gb
+      WHERE gb.id = group_members.group_booking_id
+      AND gb.primary_contact_email = auth.jwt()->>'email'
+    )
+  );
+
+-- Organizers can view group members for their events
+CREATE POLICY "Organizers can view event group members"
+  ON group_members FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM group_bookings gb
+      JOIN ticket_types tt ON tt.id = gb.ticket_type_id
+      JOIN events e ON e.id = tt.event_id
+      WHERE gb.id = group_members.group_booking_id
+      AND e.organizer_id = auth.uid()
+    )
+  );

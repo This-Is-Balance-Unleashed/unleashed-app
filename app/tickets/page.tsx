@@ -11,7 +11,7 @@ interface TicketType {
   description: string;
   features: string[];
   popular?: boolean;
-  color: 'blue' | 'yellow' | 'black' | 'teal';
+  color: 'blue' | 'yellow' | 'black' | 'yellow-gradient' | 'green' | 'teal';
 }
 
 // Style constants moved outside component to prevent recreation on each render
@@ -19,13 +19,15 @@ const bgColors = {
   blue: 'bg-white border-4 border-blue-500',
   yellow: 'bg-yellow-400',
   black: 'bg-black text-white',
+  'yellow-gradient': 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black',
+  green: 'bg-gradient-to-br from-green-500 to-green-700 text-white',
   teal: 'bg-[oklch(70%_0.15_200)] text-white',
 } as const;
 
 const ticketTypes: TicketType[] = [
   {
     id: '00000000-0000-0000-0001-000000000001',
-    name: 'General Admission',
+    name: 'Refresh Access',
     label: 'General Access',
     price: '₦10,000',
     priceInKobo: 1000000,
@@ -42,7 +44,7 @@ const ticketTypes: TicketType[] = [
   },
   {
     id: '00000000-0000-0000-0001-000000000002',
-    name: 'Refresh+ Experience (VIP)',
+    name: 'Refresh+ Experience',
     label: 'VIP',
     price: '₦18,000',
     priceInKobo: 1800000,
@@ -65,7 +67,7 @@ const ticketTypes: TicketType[] = [
     priceInKobo: 7000000,
     description: 'Ideal for HR departments and companies investing in staff wellness.',
     features: [
-      '5–8 General Admission tickets included',
+      'Admits 8 people (General Access)',
       'Company logo featured in "Corporate Partners" section',
       'Reserved team seating area',
       'Post-summit "Career Wellness Audit" report',
@@ -75,15 +77,49 @@ const ticketTypes: TicketType[] = [
     color: 'black',
   },
   {
+    id: '00000000-0000-0000-0001-000000000005',
+    name: 'Corporate VIP',
+    label: 'Teams VIP',
+    price: '₦70,000',
+    priceInKobo: 7000000,
+    description: 'Premium corporate package with VIP access for your team.',
+    features: [
+      'Admits 4 people (VIP Access)',
+      'All VIP perks for each attendee',
+      'Company logo featured in "Corporate Partners" section',
+      'Reserved VIP team seating area',
+      'Post-summit "Career Wellness Audit" report',
+      'Team photo opportunity',
+      'Dedicated support contact',
+    ],
+    color: 'yellow-gradient',
+  },
+  {
+    id: '00000000-0000-0000-0001-000000000006',
+    name: 'Group Refresh',
+    label: 'Friends Discount',
+    price: '₦50,000',
+    priceInKobo: 5000000,
+    description: 'Perfect for friends coming together! Buy 5, Get 1 Free.',
+    features: [
+      'Admits 6 people (General Access)',
+      'Save ₦10,000 compared to individual tickets',
+      'Reserved group seating area',
+      'Networking opportunities',
+      'Access to all sessions and two Masterclasses',
+    ],
+    color: 'green',
+  },
+  {
     id: '00000000-0000-0000-0001-000000000004',
-    name: 'Refresh Online (Virtual Pass)',
+    name: 'Refresh Online',
     label: 'Virtual Pass',
     price: '₦6,500',
     priceInKobo: 650000,
     description: 'Join from anywhere! Perfect for remote attendees.',
     features: [
       'Livestream access to keynote + panel sessions',
-      'Replay access for 7–14 days',
+      'Replay access for 14 days',
       'Digital workbook/reflection journal (PDF)',
       'Virtual networking opportunities',
       'Q&A participation',
@@ -117,7 +153,7 @@ export default function TicketsPage() {
 
       {/* Tickets Grid */}
       <div className="container mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {ticketTypes.map((ticket) => (
             <TicketCard key={ticket.id} ticket={ticket} />
           ))}
@@ -177,17 +213,17 @@ const TicketCard = memo(function TicketCard({ ticket }: { ticket: TicketType }) 
           </span>
         </div>
       )}
-      <Link href={`/purchase/${ticket.id}`} className="block group">
+      <Link href={`/purchase/${ticket.id}`} className="block group h-full">
         <div
-          className={`relative rounded-2xl overflow-hidden shadow-xl transform group-hover:scale-105 transition-all duration-300 ${bgColors[ticket.color]} h-full`}
+          className={`relative rounded-2xl overflow-hidden shadow-xl transform group-hover:scale-105 transition-all duration-300 h-full ${bgColors[ticket.color]}`}
         >
-          <div className="p-8 flex flex-col h-full">
+          <div className="p-8 flex flex-col h-full min-h-[500px]">
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
               <Image src="/icon-logo.svg" alt="Logo" width={40} height={40} />
               <span
                 className={`text-xs md:text-sm font-medium px-3 py-1 rounded ${
-                  ticket.color === 'blue' || ticket.color === 'yellow'
+                  ticket.color === 'blue' || ticket.color === 'yellow' || ticket.color === 'yellow-gradient'
                     ? 'bg-black/10 text-black'
                     : 'bg-white/20 text-white'
                 }`}
@@ -214,11 +250,13 @@ const TicketCard = memo(function TicketCard({ ticket }: { ticket: TicketType }) 
             {/* Description */}
             <p
               className={`text-sm md:text-base mb-6 ${
-                ticket.color === 'black' || ticket.color === 'teal'
+                ticket.color === 'black' || ticket.color === 'teal' || ticket.color === 'green'
                   ? 'text-gray-200'
                   : ticket.color === 'yellow'
                     ? 'text-gray-800'
-                    : 'text-gray-600'
+                    : ticket.color === 'yellow-gradient'
+                      ? 'text-gray-900'
+                      : 'text-gray-600'
               }`}
             >
               {ticket.description}
@@ -230,7 +268,7 @@ const TicketCard = memo(function TicketCard({ ticket }: { ticket: TicketType }) 
                 <li key={index} className="flex items-start gap-2">
                   <svg
                     className={`w-5 h-5 shrink-0 mt-0.5 ${
-                      ticket.color === 'black' || ticket.color === 'teal'
+                      ticket.color === 'black' || ticket.color === 'teal' || ticket.color === 'green'
                         ? 'text-green-400'
                         : 'text-green-600'
                     }`}
@@ -247,11 +285,13 @@ const TicketCard = memo(function TicketCard({ ticket }: { ticket: TicketType }) 
                   </svg>
                   <span
                     className={`text-sm ${
-                      ticket.color === 'black' || ticket.color === 'teal'
+                      ticket.color === 'black' || ticket.color === 'teal' || ticket.color === 'green'
                         ? 'text-gray-200'
                         : ticket.color === 'yellow'
                           ? 'text-gray-800'
-                          : 'text-gray-700'
+                          : ticket.color === 'yellow-gradient'
+                            ? 'text-gray-900'
+                            : 'text-gray-700'
                     }`}
                   >
                     {feature}
@@ -265,7 +305,7 @@ const TicketCard = memo(function TicketCard({ ticket }: { ticket: TicketType }) 
               className={`w-full py-4 rounded-lg font-semibold text-lg transition-all ${
                 ticket.color === 'blue'
                   ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : ticket.color === 'yellow'
+                  : ticket.color === 'yellow' || ticket.color === 'yellow-gradient'
                     ? 'bg-black text-white hover:bg-gray-900'
                     : 'bg-white text-black hover:bg-gray-100'
               }`}

@@ -13,14 +13,24 @@ const ticketTypesMetadata: Record<string, { name: string; description: string; p
     price: '₦18,000',
   },
   '00000000-0000-0000-0001-000000000003': {
-    name: 'Refresh Corporate',
-    description: 'Perfect for companies investing in staff wellness and productivity',
-    price: '₦70,000',
+    name: 'Corporate Refresh Package (8 Members)',
+    description: 'Team wellness package for 8 members. Perfect for companies investing in staff wellness and productivity with group discounts available.',
+    price: '₦70,000 per package',
   },
   '00000000-0000-0000-0001-000000000004': {
     name: 'Refresh Online (Virtual Pass)',
     description: 'Livestream access + 14-day replay',
     price: '₦6,500',
+  },
+  '00000000-0000-0000-0001-000000000005': {
+    name: 'Corporate Refresh VIP Package (4 Members)',
+    description: 'Premium VIP team package for 4 members. Includes front-row seating, all masterclasses, and exclusive wellness goody bags for your team.',
+    price: '₦72,000 per package',
+  },
+  '00000000-0000-0000-0001-000000000006': {
+    name: 'Group Refresh Package (6 Members)',
+    description: 'Perfect group package for 6 members. Ideal for friend groups, small teams, or family members attending together.',
+    price: '₦54,000 per package',
   },
 };
 
