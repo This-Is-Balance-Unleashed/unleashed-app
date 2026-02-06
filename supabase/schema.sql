@@ -381,3 +381,16 @@ CREATE POLICY "Organizers can view event group members"
       AND e.organizer_id = auth.uid()
     )
   );
+
+-- ============================================================================
+-- MIGRATION: 2026-02-05 - Add Coupon Support to Group Bookings
+-- ============================================================================
+-- Adds coupon_id column to group_bookings table to track coupon usage
+-- for corporate and group ticket purchases
+-- ============================================================================
+
+-- Add coupon_id column to group_bookings table
+ALTER TABLE group_bookings ADD COLUMN IF NOT EXISTS coupon_id UUID REFERENCES coupons(id) ON DELETE SET NULL;
+
+-- Add index for better query performance
+CREATE INDEX IF NOT EXISTS idx_group_bookings_coupon_id ON group_bookings(coupon_id);
