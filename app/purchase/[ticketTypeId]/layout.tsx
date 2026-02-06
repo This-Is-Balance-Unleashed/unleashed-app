@@ -52,7 +52,7 @@ export async function generateMetadata({
 
   return {
     title: `${ticketInfo.name} - ${ticketInfo.price}`,
-    description: `${ticketInfo.description}. Get your ticket for Hit Refresh: Career + Wellness Summit 2026 in Lagos, Nigeria.`,
+    description: `${ticketInfo.description}. Get your ticket for Hit Refresh: Career + Wellness Summit 2026, Nigeria.`,
     openGraph: {
       title: `${ticketInfo.name} - Hit Refresh Summit 2026`,
       description: ticketInfo.description,

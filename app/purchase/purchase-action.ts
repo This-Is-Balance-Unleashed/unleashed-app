@@ -35,12 +35,16 @@ export async function purchaseTicketAction(prev: unknown, formData: FormData) {
     // Get additional data from form
     const eventId = formData.get('eventId') as string;
     const ticketTypeId = formData.get('ticketTypeId') as string;
+    // Get couponCode from hidden field (fallback to validatedData)
+    const couponCode = (formData.get('couponCode') as string) || validatedData.couponCode || '';
 
     // Call the purchase API
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const baseUrl = isDevelopment
-      ? 'http://localhost:3000'
-      : (process.env.NEXT_PUBLIC_BASE_URL || 'https://unleashedevents.netlify.app');
+    const { headers } = await import('next/headers');
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
+
     const response = await fetch(`${baseUrl}/api/tickets/purchase`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,7 +56,7 @@ export async function purchaseTicketAction(prev: unknown, formData: FormData) {
         event_id: eventId,
         ticket_type_id: ticketTypeId,
         quantity: validatedData.quantity,
-        coupon_code: validatedData.couponCode || undefined,
+        coupon_code: couponCode || undefined,
       }),
     });
 
