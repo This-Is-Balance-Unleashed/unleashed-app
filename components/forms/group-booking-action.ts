@@ -33,12 +33,18 @@ export async function createGroupBookingAction(prev: unknown, formData: FormData
     const ticketTypeId = formData.get('ticketTypeId') as string;
     const bookingType = formData.get('bookingType') as 'corporate' | 'group';
     const quantity = parseInt(formData.get('quantity') as string, 10);
+    const totalMembers = formData.get('totalMembers') as string;
+    const couponCode = formData.get('couponCode') as string | null;
 
     // Prepare form data for API
     const apiFormData = new FormData();
     apiFormData.append('ticketTypeId', ticketTypeId);
     apiFormData.append('bookingType', bookingType);
     apiFormData.append('quantity', quantity.toString());
+    apiFormData.append('totalMembers', totalMembers);
+    if (couponCode) {
+      apiFormData.append('couponCode', couponCode);
+    }
     apiFormData.append('primaryContactName', validatedData.primaryContactName);
     apiFormData.append('primaryContactEmail', validatedData.primaryContactEmail);
     apiFormData.append('primaryContactPhone', validatedData.primaryContactPhone);
@@ -48,7 +54,10 @@ export async function createGroupBookingAction(prev: unknown, formData: FormData
       if (validatedData.companyLogo) {
         apiFormData.append('companyLogo', validatedData.companyLogo);
       }
-      apiFormData.append('selectedPerks', JSON.stringify(validatedData.selectedPerks || []));
+      // Get selectedPerks from hidden field instead of validatedData
+      const selectedPerksArray = formData.get('selectedPerksArray') as string;
+      console.log('Sending selected perks from hidden field:', selectedPerksArray);
+      apiFormData.append('selectedPerks', selectedPerksArray || '[]');
       apiFormData.append('teamPreferences', validatedData.teamPreferences || '');
     } else {
       apiFormData.append('groupName', validatedData.groupName || '');
@@ -59,10 +68,12 @@ export async function createGroupBookingAction(prev: unknown, formData: FormData
     }
 
     // Call API to create booking
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const baseUrl = isDevelopment
-      ? 'http://localhost:3000'
-      : (process.env.NEXT_PUBLIC_BASE_URL || 'https://unleashedevents.netlify.app');
+    const { headers } = await import('next/headers');
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
+
     const response = await fetch(`${baseUrl}/api/group-bookings/create`, {
       method: 'POST',
       body: apiFormData,

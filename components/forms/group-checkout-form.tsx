@@ -8,10 +8,11 @@ import {
   useForm,
   useTransform,
 } from '@tanstack/react-form-nextjs';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useEasterEggs } from '@/hooks/useEasterEggs';
+import { OrderSummary } from '@/components/ui/order-summary';
 import { CorporateFields } from './corporate-fields';
 import { GroupFields } from './group-fields';
 import { MemberFieldsArray } from './member-fields-array';
@@ -31,6 +32,9 @@ const EasterEggToast = dynamic(
   () => import('@/components/ui/easter-eggs/easter-egg-toast').then(m => m.EasterEggToast),
   { ssr: false }
 );
+
+// Easter egg coupon configuration
+const EASTER_EGG_COUPON_CODE = 'EARLYBIRD';
 
 interface GroupCheckoutFormProps {
   ticketTypeId: string;
@@ -57,14 +61,15 @@ export function GroupCheckoutForm({
   event,
 }: GroupCheckoutFormProps) {
   const [quantity, setQuantity] = useState(1); // Start at 1 ticket/package
-  const [state, action] = useActionState(createGroupBookingAction, initialFormState);
+  const [state, action, isPending] = useActionState(createGroupBookingAction, initialFormState);
   const [timeRemaining, setTimeRemaining] = useState(30 * 60); // 30 minutes in seconds
-  const [isExpired, setIsExpired] = useState(false);
+  const isExpired = timeRemaining <= 0;
   const [easterEggFound, setEasterEggFound] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isCouponDialogOpen, setIsCouponDialogOpen] = useState(false);
   const [couponInput, setCouponInput] = useState('');
+  const [appliedCouponCode, setAppliedCouponCode] = useState('');
   const [couponDiscount, setCouponDiscount] = useState<{
     valid: boolean;
     discount_amount: number;
@@ -89,16 +94,10 @@ export function GroupCheckoutForm({
 
   // Timer effect
   useEffect(() => {
-    if (timeRemaining <= 0) {
-      setIsExpired(true);
-      return;
-    }
-
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          setIsExpired(true);
           return 0;
         }
         return prev - 1;
@@ -106,7 +105,7 @@ export function GroupCheckoutForm({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timeRemaining]);
+  }, []);
 
   // Easter egg handler
   const handleEasterEggFound = useCallback(async () => {
@@ -118,23 +117,34 @@ export function GroupCheckoutForm({
 
     // Auto-apply a coupon or special discount if applicable
     try {
+      console.log('🎉 Easter egg found! Attempting to apply coupon:', EASTER_EGG_COUPON_CODE);
+      console.log('Ticket type ID:', ticketTypeId);
+      console.log('Event ID:', event?.id);
+
       const response = await fetch('/api/coupons/check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          code: 'EARLYBIRD',
+          code: EASTER_EGG_COUPON_CODE,
           ticket_type_id: ticketTypeId,
           event_id: event?.id,
         }),
       });
 
       const data = await response.json();
+      console.log('Coupon check response:', data);
 
       if (data.valid) {
+        console.log('✅ Coupon valid! Applying discount...');
         setCouponDiscount(data);
+        setAppliedCouponCode(EASTER_EGG_COUPON_CODE);
+      } else {
+        console.log('❌ Coupon not valid:', data.error);
+        setToastMessage(data.error || 'Coupon not available');
       }
     } catch (error) {
       console.error('Failed to apply easter egg coupon:', error);
+      setToastMessage('Failed to apply discount');
     }
   }, [easterEggFound, ticketTypeId, event]);
 
@@ -162,31 +172,27 @@ export function GroupCheckoutForm({
     return `₦${(kobo / 100).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const currentPriceData = useMemo(() => {
+    // Service fee is calculated on ORIGINAL price (before any discounts)
+    const originalSubtotal = basePrice * quantity;
+    const serviceFee = Math.round(originalSubtotal * (SERVICE_FEE_PERCENT / 100));
 
-  const calculatePrices = () => {
+    // Apply coupon discount to base price only
+    const pricePerTicket = couponDiscount ? couponDiscount.new_price : basePrice;
+    const subtotalAfterCoupon = pricePerTicket * quantity;
+    const couponDiscountAmount = originalSubtotal - subtotalAfterCoupon;
+
+    // Apply volume discount (10% for 2+ corporate packages)
     const shouldApplyVolumeDiscount = bookingType === 'corporate' && quantity >= 2;
     const volumeDiscountPercentage = shouldApplyVolumeDiscount ? 0.1 : 0;
+    const volumeDiscount = Math.floor(subtotalAfterCoupon * volumeDiscountPercentage);
+    const subtotalAfterDiscount = subtotalAfterCoupon - volumeDiscount;
 
-    const pricePerTicket = couponDiscount ? couponDiscount.new_price : basePrice;
-    const subtotal = pricePerTicket * quantity;
-    const volumeDiscount = Math.floor(subtotal * volumeDiscountPercentage);
-    const subtotalAfterDiscount = subtotal - volumeDiscount;
-    const serviceFee = Math.round(subtotalAfterDiscount * (SERVICE_FEE_PERCENT / 100));
+    // Total = discounted price + service fee (on original)
     const total = subtotalAfterDiscount + serviceFee;
 
-    return { subtotal, volumeDiscount, subtotalAfterDiscount, serviceFee, total };
-  };
+    return { originalSubtotal, subtotal: subtotalAfterCoupon, volumeDiscount, subtotalAfterDiscount, serviceFee, total, couponDiscountAmount };
+  }, [bookingType, quantity, couponDiscount, basePrice]);
 
   const handleApplyCoupon = async () => {
     if (!couponInput.trim()) return;
@@ -206,11 +212,13 @@ export function GroupCheckoutForm({
 
       if (data.valid) {
         setCouponDiscount(data);
+        setAppliedCouponCode(couponInput);
         setIsCouponDialogOpen(false);
         setCouponInput('');
       } else {
         alert(data.error || 'Invalid coupon code');
         setCouponDiscount(null);
+        setAppliedCouponCode('');
       }
     } catch {
       console.log('Failed to apply coupon');
@@ -219,7 +227,14 @@ export function GroupCheckoutForm({
 
   const totalMembers = membersPerTicket * quantity; // Total members across all tickets
   const memberCount = totalMembers - 1; // Subtract primary contact
-  const { subtotal, volumeDiscount, subtotalAfterDiscount, serviceFee, total } = calculatePrices();
+  const { volumeDiscount, subtotalAfterDiscount, serviceFee, total } = currentPriceData;
+
+  const handleCouponClick = useCallback((e: React.MouseEvent) => {
+    handleShiftAltClick(e);
+    if (!e.defaultPrevented) {
+      setIsCouponDialogOpen(true);
+    }
+  }, [handleShiftAltClick]);
 
   if (isExpired) {
     return (
@@ -278,6 +293,19 @@ export function GroupCheckoutForm({
               <input type="hidden" name="bookingType" value={bookingType} />
               <input type="hidden" name="quantity" value={quantity} />
               <input type="hidden" name="totalMembers" value={totalMembers} />
+              {appliedCouponCode && (
+                <input type="hidden" name="couponCode" value={appliedCouponCode} />
+              )}
+              {/* Serialize selectedPerks array for form submission */}
+              <form.Subscribe selector={(state) => state.values.selectedPerks}>
+                {(selectedPerks) => (
+                  <input
+                    type="hidden"
+                    name="selectedPerksArray"
+                    value={JSON.stringify(selectedPerks || [])}
+                  />
+                )}
+              </form.Subscribe>
 
               {/* Quantity Selector */}
               <div className="mb-8 p-6 bg-gray-50 rounded-xl">
@@ -313,14 +341,14 @@ export function GroupCheckoutForm({
               <div className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">Primary Contact</h3>
                 <div className="space-y-4">
-                  <form.Field
-                    name="primaryContactName"
-                    children={(field) => (
+                  <form.Field name="primaryContactName">
+                    {(field) => (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="primaryContactName" className="block text-sm font-medium text-gray-700 mb-2">
                           Full Name *
                         </label>
                         <input
+                          id="primaryContactName"
                           type="text"
                           name="primaryContactName"
                           value={field.state.value}
@@ -332,16 +360,16 @@ export function GroupCheckoutForm({
                         />
                       </div>
                     )}
-                  />
+                  </form.Field>
 
-                  <form.Field
-                    name="primaryContactEmail"
-                    children={(field) => (
+                  <form.Field name="primaryContactEmail">
+                    {(field) => (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="primaryContactEmail" className="block text-sm font-medium text-gray-700 mb-2">
                           Email Address *
                         </label>
                         <input
+                          id="primaryContactEmail"
                           type="email"
                           name="primaryContactEmail"
                           value={field.state.value}
@@ -353,16 +381,16 @@ export function GroupCheckoutForm({
                         />
                       </div>
                     )}
-                  />
+                  </form.Field>
 
-                  <form.Field
-                    name="primaryContactPhone"
-                    children={(field) => (
+                  <form.Field name="primaryContactPhone">
+                    {(field) => (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="primaryContactPhone" className="block text-sm font-medium text-gray-700 mb-2">
                           Phone Number *
                         </label>
                         <input
+                          id="primaryContactPhone"
                           type="tel"
                           name="primaryContactPhone"
                           value={field.state.value}
@@ -374,7 +402,7 @@ export function GroupCheckoutForm({
                         />
                       </div>
                     )}
-                  />
+                  </form.Field>
                 </div>
               </div>
 
@@ -403,10 +431,10 @@ export function GroupCheckoutForm({
                   {([canSubmit, isSubmitting]) => (
                     <button
                       type="submit"
-                      disabled={!canSubmit || isSubmitting}
+                      disabled={!canSubmit || isSubmitting || isPending}
                       className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isSubmitting ? 'Processing...' : `Proceed to Payment (${formatPrice(total)})`}
+                      {(isSubmitting || isPending) ? 'Processing...' : `Proceed to Payment (${formatPrice(total)})`}
                     </button>
                   )}
                 </form.Subscribe>
@@ -415,86 +443,53 @@ export function GroupCheckoutForm({
           </div>
 
           {/* Summary Sidebar */}
-          <div className="bg-white rounded-lg shadow-sm p-8 h-fit sticky top-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-2 font-melo">
-              {event?.title || 'Balance Unleashed 2025'}
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              {event ? formatDate(event.event_date) : 'TBA'} – 16:00 WAT
-              <br />
-              Physical & Online
-            </p>
+          <OrderSummary
+            eventTitle={event?.title || 'Balance Unleashed 2025'}
+            eventDate={event?.event_date || ''}
+            onAddCouponClick={handleCouponClick}
+            total={total}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <p className="font-semibold text-gray-900">{ticketTypeName}</p>
+                <p className="text-sm text-gray-600">
+                  {quantity} package{quantity !== 1 ? 's' : ''} × {membersPerTicket} members
+                </p>
+                <p className="text-xs text-gray-500">Total: {totalMembers} members</p>
+              </div>
+              <p className="font-semibold text-gray-900">
+                {formatPrice(basePrice)}
+              </p>
+            </div>
 
-            <button
-              type="button"
-              className="text-primary text-sm hover:underline mb-6 flex items-center space-x-1"
-              onClick={(e) => {
-                handleShiftAltClick(e);
-                if (!e.defaultPrevented) {
-                  setIsCouponDialogOpen(true);
-                }
-              }}
-              title="Hold Shift + Alt and click for a surprise..."
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              <span>Add Coupon Code</span>
-            </button>
-
-            <div className="border-t border-gray-200 pt-4">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <p className="font-semibold text-gray-900">{ticketTypeName}</p>
-                  <p className="text-sm text-gray-600">
-                    {quantity} package{quantity !== 1 ? 's' : ''} × {membersPerTicket} members
-                  </p>
-                  <p className="text-xs text-gray-500">Total: {totalMembers} members</p>
-                </div>
-                <p className="font-semibold text-gray-900">
-                  {formatPrice(basePrice)}
+            {couponDiscount && (
+              <div className="flex justify-between items-center mb-4 text-green-600">
+                <p className="text-sm">Coupon Discount</p>
+                <p className="text-sm font-semibold">
+                  -{formatPrice(couponDiscount.discount_amount * quantity)}
                 </p>
               </div>
+            )}
 
-              {couponDiscount && (
-                <div className="flex justify-between items-center mb-4 text-green-600">
-                  <p className="text-sm">Coupon Discount</p>
-                  <p className="text-sm font-semibold">
-                    -{formatPrice(couponDiscount.discount_amount * quantity)}
-                  </p>
-                </div>
-              )}
-
-              {volumeDiscount > 0 && (
-                <div className="flex justify-between items-center mb-4 text-green-600">
-                  <p className="text-sm">Volume Discount (10%)</p>
-                  <p className="text-sm font-semibold">
-                    -{formatPrice(volumeDiscount)}
-                  </p>
-                </div>
-              )}
-
-              <div className="flex justify-between items-center mb-4">
-                <p className="text-gray-700">Subtotal</p>
-                <p className="font-semibold text-gray-900">{formatPrice(subtotalAfterDiscount)}</p>
+            {volumeDiscount > 0 && (
+              <div className="flex justify-between items-center mb-4 text-green-600">
+                <p className="text-sm">Volume Discount (10%)</p>
+                <p className="text-sm font-semibold">
+                  -{formatPrice(volumeDiscount)}
+                </p>
               </div>
+            )}
 
-              <div className="flex justify-between items-center mb-6">
-                <p className="text-gray-700">Service fee</p>
-                <p className="text-gray-900">{formatPrice(serviceFee)}</p>
-              </div>
-
-              <div className="bg-gray-100 -mx-8 px-8 py-4 flex justify-between items-center">
-                <p className="text-lg font-bold text-gray-900">Total</p>
-                <p className="text-lg font-bold text-gray-900">{formatPrice(total)}</p>
-              </div>
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-gray-700">Subtotal</p>
+              <p className="font-semibold text-gray-900">{formatPrice(subtotalAfterDiscount)}</p>
             </div>
-          </div>
+
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-gray-700">Service fee</p>
+              <p className="text-gray-900">{formatPrice(serviceFee)}</p>
+            </div>
+          </OrderSummary>
         </div>
       </div>
 

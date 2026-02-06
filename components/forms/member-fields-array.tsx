@@ -86,10 +86,11 @@ export function MemberFieldsArray({ form, memberCount }: MemberFieldsArrayProps)
 
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor={`member-${index}-name`} className="block text-sm font-medium text-gray-700 mb-1">
                           Full Name
                         </label>
                         <input
+                          id={`member-${index}-name`}
                           type="text"
                           value={field.state.value?.[index]?.name || ''}
                           onChange={(e) => {
@@ -107,10 +108,11 @@ export function MemberFieldsArray({ form, memberCount }: MemberFieldsArrayProps)
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor={`member-${index}-email`} className="block text-sm font-medium text-gray-700 mb-1">
                           Email Address
                         </label>
                         <input
+                          id={`member-${index}-email`}
                           type="email"
                           value={field.state.value?.[index]?.email || ''}
                           onChange={(e) => {

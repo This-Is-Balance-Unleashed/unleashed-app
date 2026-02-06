@@ -20,10 +20,11 @@ export function GroupFields({ form }: GroupFieldsProps) {
         name="groupName"
         children={(field) => (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="groupName" className="block text-sm font-medium text-gray-700 mb-2">
               Group Name *
             </label>
             <input
+              id="groupName"
               type="text"
               name="groupName"
               value={field.state.value}

@@ -31,10 +31,11 @@ export function CorporateFields({ form }: CorporateFieldsProps) {
         name="companyName"
         children={(field) => (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
               Company Name *
             </label>
             <input
+              id="companyName"
               type="text"
               name="companyName"
               value={field.state.value}
@@ -53,11 +54,12 @@ export function CorporateFields({ form }: CorporateFieldsProps) {
         name="companyLogo"
         children={(field) => (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="companyLogo" className="block text-sm font-medium text-gray-700 mb-2">
               Company Logo *
             </label>
             <div className="mt-2">
               <input
+                id="companyLogo"
                 type="file"
                 name="companyLogo"
                 accept="image/*"
@@ -101,10 +103,10 @@ export function CorporateFields({ form }: CorporateFieldsProps) {
       <form.Field
         name="selectedPerks"
         children={(field) => (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+          <fieldset>
+            <legend className="block text-sm font-medium text-gray-700 mb-3">
               Select Corporate Perks *
-            </label>
+            </legend>
             <p className="text-sm text-gray-600 mb-4">
               Choose the benefits you'd like to include (select all that apply)
             </p>
@@ -112,9 +114,11 @@ export function CorporateFields({ form }: CorporateFieldsProps) {
               {CORPORATE_PERKS.map((perk) => (
                 <label
                   key={perk.id}
+                  htmlFor={`perk-${perk.id}`}
                   className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg hover:border-primary cursor-pointer transition-colors"
                 >
                   <input
+                    id={`perk-${perk.id}`}
                     type="checkbox"
                     name="selectedPerks"
                     value={perk.id}
@@ -136,7 +140,7 @@ export function CorporateFields({ form }: CorporateFieldsProps) {
                 </label>
               ))}
             </div>
-          </div>
+          </fieldset>
         )}
       />
 
@@ -145,10 +149,11 @@ export function CorporateFields({ form }: CorporateFieldsProps) {
         name="teamPreferences"
         children={(field) => (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="teamPreferences" className="block text-sm font-medium text-gray-700 mb-2">
               Team Preferences (Optional)
             </label>
             <textarea
+              id="teamPreferences"
               name="teamPreferences"
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
