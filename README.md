@@ -1,6 +1,6 @@
 # Unleashed App (Hit Refresh Conference)
 
-A Next.js web application for the Hit Refresh Conference - Lagos' premier career and wellness event scheduled for February 28, 2026.
+A Next.js web application for the Hit Refresh Conference - The premier career and wellness event scheduled for February 28, 2026.
 
 ## About
 
