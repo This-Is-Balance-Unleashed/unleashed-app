@@ -11,14 +11,14 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     question: 'What is Hit Refresh Conference?',
-    answer: 'Hit Refresh Conference is a premier career and wellness event in Lagos, Nigeria, taking place on February 28, 2026. It brings together industry leaders and wellness experts to help professionals achieve work-life balance and sustainable career growth.',
+    answer: 'Hit Refresh Conference is a premier career and wellness event in Nigeria, taking place on February 28, 2026. It brings together industry leaders and wellness experts to help professionals achieve work-life balance and sustainable career growth.',
   },
   {
     question: 'Where is Hit Refresh Conference happening?',
     answer: 'Hit Refresh Conference will take place in Lagos, Nigeria, with both in-person and virtual attendance options available.',
   },
   {
-    question: 'What makes this different from other events in Lagos?',
+    question: 'What makes this different from other events?',
     answer: "Hit Refresh Conference is not a typical motivation rally. It's a practical wellness summit focused on actionable strategies for work-life balance, mental wellness, and sustainable career growth. Attendees learn to work smarter, break free from burnout, and build routines that protect their wellbeing.",
   },
   {
@@ -61,7 +61,7 @@ export function FAQSection() {
               <span className="text-gradient-orange">Frequently Asked Questions</span>
             </h2>
             <p className="text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-sans mt-4">
-              Everything you need to know about Hit Refresh Conference in Lagos
+              Everything you need to know about Hit Refresh Conference
             </p>
           </div>
 
