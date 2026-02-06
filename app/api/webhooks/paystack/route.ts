@@ -27,7 +27,8 @@ export async function POST(request: Request) {
       const isTestTransaction = reference.startsWith('test_');
 
       // Get quantity from metadata (default to 1 if not provided for backwards compatibility)
-      const quantity = metadata.quantity || 1;
+      // For group bookings, use total_members if available, otherwise quantity
+      const quantity = metadata.total_members ? parseInt(metadata.total_members) : (metadata.quantity || 1);
 
       // Check if this is a group booking
       const isGroupBooking = metadata.booking_type && metadata.group_booking_id;
@@ -56,11 +57,11 @@ export async function POST(request: Request) {
             event_id: metadata.event_id,
             ticket_type_id: metadata.ticket_type_id,
             email: customer.email,
-            name: metadata.primary_contact || customer.email.split('@')[0],
+            name: metadata.primary_contact || customer.email?.split('@')[0] || 'Guest',
             paystack_reference: `${reference}-${i + 1}`,
             status: 'paid',
             ticket_secret: ticketSecret,
-            price_paid: Math.round(amount / quantity),
+            price_paid: Math.round(amount / quantity), // Distribute total amount per ticket
             group_booking_id: metadata.group_booking_id,
           });
         }

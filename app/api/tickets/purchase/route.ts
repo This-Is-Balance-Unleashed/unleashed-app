@@ -3,7 +3,10 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
-    const { email, first_name, last_name, ticket_type_id, user_id, coupon_code, quantity = 1 } = await request.json();
+    const body = await request.json();
+    const { email, first_name, last_name, ticket_type_id, user_id, coupon_code } = body;
+    // Ensure quantity is a number
+    const quantity = parseInt(body.quantity || '1', 10);
 
     if (!ticket_type_id) {
       return NextResponse.json({ error: 'Ticket type is required' }, { status: 400 });
@@ -41,9 +44,14 @@ export async function POST(request: Request) {
 
     // Calculate price for the quantity of tickets
     const pricePerTicket = ticketType.price_in_kobo;
-    let finalPrice = pricePerTicket * quantity;
+    const originalPrice = pricePerTicket * quantity;
+    let discountedPrice = originalPrice;
     let validCouponId = null;
     const actualEventId = ticketType.events.id;
+
+    // Calculate service fee on ORIGINAL price (before any discounts)
+    const SERVICE_FEE_PERCENT = 2.5;
+    const serviceFee = Math.round(originalPrice * (SERVICE_FEE_PERCENT / 100));
 
     // 2. Coupon Logic (If code provided)
     if (coupon_code) {
@@ -65,27 +73,33 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid or expired coupon' }, { status: 400 });
       }
 
-      // Apply Discount (with safeguards for invalid values)
+      // Apply Discount to base price only (not service fee)
       validCouponId = coupon.id;
       if (coupon.discount_type === 'percent') {
         // Cap percent discount at 100% to prevent invalid values
         const percentValue = Math.min(coupon.discount_value, 100);
-        const discountAmount = finalPrice * (percentValue / 100);
-        finalPrice -= discountAmount;
+        const discountAmount = discountedPrice * (percentValue / 100);
+        discountedPrice -= discountAmount;
       } else if (coupon.discount_type === 'fixed') {
         // Cap fixed discount at total price
-        const fixedDiscount = Math.min(coupon.discount_value, finalPrice);
-        finalPrice -= fixedDiscount;
+        const fixedDiscount = Math.min(coupon.discount_value, discountedPrice);
+        discountedPrice -= fixedDiscount;
       }
 
       // Safety check: Price cannot be negative
-      if (finalPrice < 0) finalPrice = 0;
+      if (discountedPrice < 0) discountedPrice = 0;
     }
 
-    // Add service fee (2.5%) to the final price
-    const SERVICE_FEE_PERCENT = 2.5;
-    const serviceFee = Math.round(finalPrice * (SERVICE_FEE_PERCENT / 100));
-    const totalAmount = finalPrice + serviceFee;
+    // Total = Discounted base price + Service fee (on original price)
+    const totalAmount = discountedPrice + serviceFee;
+
+    console.log('Price calculation:', {
+      originalPrice,
+      discountedPrice,
+      serviceFee,
+      totalAmount,
+      coupon_code: coupon_code || 'none'
+    });
 
     // 3. Initialize Paystack transaction with custom_fields for customer name
     const customerFullName = `${first_name} ${last_name}`;

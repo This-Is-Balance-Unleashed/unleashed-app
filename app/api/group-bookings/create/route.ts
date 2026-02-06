@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     const primaryContactName = formData.get('primaryContactName') as string;
     const primaryContactEmail = formData.get('primaryContactEmail') as string;
     const primaryContactPhone = formData.get('primaryContactPhone') as string;
+    const couponCode = formData.get('couponCode') as string | null;
 
     // Validate required fields
     if (!ticketTypeId || !bookingType || !quantity || !primaryContactName || !primaryContactEmail) {
@@ -22,12 +23,95 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch ticket type information
-    const { data: ticketType, error: ticketError } = await supabaseAdmin
+    // Start independent promises in parallel
+    const ticketPromise = supabaseAdmin
       .from('ticket_types')
       .select('*, events(id, title)')
       .eq('id', ticketTypeId)
       .single();
+
+    const couponPromise = couponCode
+      ? supabaseAdmin
+          .from('coupons')
+          .select('*')
+          .eq('code', couponCode.toUpperCase())
+          .single()
+      : Promise.resolve({ data: null, error: null });
+
+    let logoUploadPromise: Promise<{ publicUrl: string | null; error?: any }> =
+      Promise.resolve({ publicUrl: null });
+
+    // Handle file upload for company logo (corporate only)
+    let companyLogoUrl: string | null = null;
+    if (bookingType === 'corporate') {
+      const companyLogo = formData.get('companyLogo') as File | null;
+
+      if (companyLogo && companyLogo.size > 0) {
+        // Validate file size (max 2MB)
+        if (companyLogo.size > 2 * 1024 * 1024) {
+          return NextResponse.json(
+            { error: 'Company logo must be less than 2MB' },
+            { status: 400 }
+          );
+        }
+
+        // Validate file type
+        if (!companyLogo.type.startsWith('image/')) {
+          return NextResponse.json(
+            { error: 'Company logo must be an image file' },
+            { status: 400 }
+          );
+        }
+
+        // Start upload immediately
+        logoUploadPromise = (async () => {
+          const fileExt = companyLogo.name.split('.').pop();
+          const fileName = `${Date.now()}-${Math.random()
+            .toString(36)
+            .substring(7)}.${fileExt}`;
+          const filePath = `company-logos/${fileName}`;
+
+          const arrayBuffer = await companyLogo.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          const { error: uploadError } = await supabaseAdmin.storage
+            .from('event-assets')
+            .upload(filePath, buffer, {
+              contentType: companyLogo.type,
+              upsert: false,
+            });
+
+          if (uploadError) {
+            console.error('Logo upload error:', uploadError);
+            return { publicUrl: null, error: uploadError };
+          }
+
+          const {
+            data: { publicUrl },
+          } = supabaseAdmin.storage.from('event-assets').getPublicUrl(filePath);
+
+          return { publicUrl };
+        })();
+      }
+    }
+
+    // Await all promises
+    const [ticketRes, couponRes, logoRes] = await Promise.all([
+      ticketPromise,
+      couponPromise,
+      logoUploadPromise,
+    ]);
+
+    const { data: ticketType, error: ticketError } = ticketRes;
+    const { data: coupon } = couponRes;
+    
+    if (logoRes.error) {
+        return NextResponse.json(
+            { error: 'Failed to upload company logo' },
+            { status: 500 }
+        );
+    }
+    companyLogoUrl = logoRes.publicUrl;
 
     if (ticketError || !ticketType) {
       return NextResponse.json(
@@ -61,71 +145,66 @@ export async function POST(request: Request) {
 
     // Calculate pricing with discount
     const basePrice = ticketType.price_in_kobo;
-    const subtotal = basePrice * quantity;
+    const originalSubtotal = basePrice * quantity;
+    let pricePerPackage = basePrice;
+    let validCouponId: string | null = null;
+    const actualEventId = ticketType.events.id;
 
-    // Apply 10% discount for corporate bookings with 2+ tickets
-    const shouldApplyDiscount = bookingType === 'corporate' && quantity >= 2;
-    const discountAmount = shouldApplyDiscount ? Math.floor(subtotal * 0.1) : 0;
-    const totalAfterDiscount = subtotal - discountAmount;
-
-    // Add service fee (2.5%)
+    // Calculate service fee on ORIGINAL price (before any discounts)
     const SERVICE_FEE_PERCENT = 2.5;
-    const serviceFee = Math.round(totalAfterDiscount * (SERVICE_FEE_PERCENT / 100));
+    const serviceFee = Math.round(originalSubtotal * (SERVICE_FEE_PERCENT / 100));
+
+    // Validate coupon result from promise
+    if (couponCode) {
+      // Validate coupon
+      const now = new Date();
+      if (
+        !coupon ||
+        !coupon.is_active ||
+        (coupon.expires_at && new Date(coupon.expires_at) < now) ||
+        (coupon.max_uses > 0 && coupon.times_used >= coupon.max_uses) ||
+        (coupon.event_id && coupon.event_id !== actualEventId)
+      ) {
+        return NextResponse.json(
+          { error: 'Invalid or expired coupon' },
+          { status: 400 }
+        );
+      }
+
+      // Apply coupon discount to price per package (not service fee)
+      validCouponId = coupon.id;
+      if (coupon.discount_type === 'percent') {
+        const percentValue = Math.min(coupon.discount_value, 100);
+        const discountAmount = pricePerPackage * (percentValue / 100);
+        pricePerPackage -= discountAmount;
+      } else if (coupon.discount_type === 'fixed') {
+        const fixedDiscount = Math.min(coupon.discount_value, pricePerPackage);
+        pricePerPackage -= fixedDiscount;
+      }
+
+      // Safety check
+      if (pricePerPackage < 0) pricePerPackage = 0;
+    }
+
+    const subtotalAfterCoupon = pricePerPackage * quantity;
+
+    // Apply 10% volume discount for corporate bookings with 2+ packages
+    const shouldApplyVolumeDiscount = bookingType === 'corporate' && quantity >= 2;
+    const volumeDiscountAmount = shouldApplyVolumeDiscount ? Math.floor(subtotalAfterCoupon * 0.1) : 0;
+    const totalAfterDiscount = subtotalAfterCoupon - volumeDiscountAmount;
+
+    // Total = discounted price + service fee (on original price)
     const totalAmount = totalAfterDiscount + serviceFee;
 
-    // Handle file upload for company logo (corporate only)
-    let companyLogoUrl: string | null = null;
-    if (bookingType === 'corporate') {
-      const companyLogo = formData.get('companyLogo') as File | null;
-
-      if (companyLogo && companyLogo.size > 0) {
-        // Validate file size (max 2MB)
-        if (companyLogo.size > 2 * 1024 * 1024) {
-          return NextResponse.json(
-            { error: 'Company logo must be less than 2MB' },
-            { status: 400 }
-          );
-        }
-
-        // Validate file type
-        if (!companyLogo.type.startsWith('image/')) {
-          return NextResponse.json(
-            { error: 'Company logo must be an image file' },
-            { status: 400 }
-          );
-        }
-
-        // Upload to Supabase Storage
-        const fileExt = companyLogo.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `company-logos/${fileName}`;
-
-        const arrayBuffer = await companyLogo.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-          .from('event-assets')
-          .upload(filePath, buffer, {
-            contentType: companyLogo.type,
-            upsert: false,
-          });
-
-        if (uploadError) {
-          console.error('Logo upload error:', uploadError);
-          return NextResponse.json(
-            { error: 'Failed to upload company logo' },
-            { status: 500 }
-          );
-        }
-
-        // Get public URL
-        const { data: { publicUrl } } = supabaseAdmin.storage
-          .from('event-assets')
-          .getPublicUrl(filePath);
-
-        companyLogoUrl = publicUrl;
-      }
-    }
+    console.log('Group booking price calculation:', {
+      originalSubtotal,
+      subtotalAfterCoupon,
+      volumeDiscountAmount,
+      totalAfterDiscount,
+      serviceFee,
+      totalAmount,
+      couponCode: couponCode || 'none'
+    });
 
     // Generate unique booking reference
     const origin = request.headers.get('origin') ||
@@ -149,7 +228,8 @@ export async function POST(request: Request) {
       ticket_type_id: ticketTypeId,
       quantity,
       total_price_paid: totalAmount,
-      discount_applied: discountAmount,
+      discount_applied: volumeDiscountAmount,
+      coupon_id: validCouponId,
       status: 'pending',
     };
 
@@ -159,12 +239,30 @@ export async function POST(request: Request) {
       bookingData.company_logo_url = companyLogoUrl;
 
       const selectedPerksStr = formData.get('selectedPerks') as string;
-      bookingData.selected_perks = selectedPerksStr ? JSON.parse(selectedPerksStr) : [];
+      console.log('Received selectedPerks string:', selectedPerksStr);
 
+      let parsedPerks: string[] = [];
+      try {
+        parsedPerks = selectedPerksStr ? JSON.parse(selectedPerksStr) : [];
+        // Ensure it's an array
+        if (!Array.isArray(parsedPerks)) {
+          console.error('selectedPerks is not an array:', parsedPerks);
+          parsedPerks = [];
+        }
+        console.log('Parsed selectedPerks array:', parsedPerks);
+      } catch (error) {
+        console.error('Error parsing selectedPerks:', error);
+        parsedPerks = [];
+      }
+
+      // Supabase JSONB columns accept JavaScript objects/arrays directly
+      bookingData.selected_perks = parsedPerks.length > 0 ? parsedPerks : null;
       bookingData.team_preferences = formData.get('teamPreferences') as string || null;
     } else {
       bookingData.group_name = formData.get('groupName') as string;
     }
+
+    console.log('Final bookingData.selected_perks:', bookingData.selected_perks);
 
     // Create group booking record
     const { data: groupBooking, error: bookingError } = await supabaseAdmin
@@ -180,6 +278,8 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    console.log('Created booking with selected_perks:', groupBooking.selected_perks);
 
     // Handle optional member details
     const membersStr = formData.get('members') as string;

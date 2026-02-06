@@ -28,10 +28,18 @@ async function handlePaymentVerification(reference: string) {
 
     const paymentData = paystackData.data;
     const metadata = paymentData.metadata;
-    const quantity = metadata.quantity || 1;
+    // For group bookings, 'quantity' in metadata might refer to number of packages,
+    // while 'total_members' refers to actual tickets to generate.
+    // Fallback to 1 if neither exists.
+    const quantity = metadata.total_members ? parseInt(metadata.total_members) : (metadata.quantity || 1);
+
+    // Check if this is a group booking
+    const isGroupBooking = metadata.booking_type && metadata.group_booking_id;
+    console.log('Verify payment for reference:', reference);
+    console.log('Metadata:', { booking_type: metadata.booking_type, group_booking_id: metadata.group_booking_id, isGroupBooking });
 
     // Find tickets for this transaction (both reserved AND paid - webhook may have already updated status)
-    const { data: allTickets, error: fetchError } = await supabaseAdmin
+    let { data: allTickets, error: fetchError } = await supabaseAdmin
       .from("tickets")
       .select("*")
       .in("status", ["reserved", "paid"])
@@ -42,6 +50,96 @@ async function handlePaymentVerification(reference: string) {
         { success: false, error: "Failed to fetch tickets" },
         { status: 500 },
       );
+    }
+
+    // For group bookings, if tickets don't exist yet, wait and retry
+    if (isGroupBooking && (!allTickets || allTickets.length === 0)) {
+      console.log('Group booking detected, no tickets found yet. Checking group_bookings table...');
+
+      // Check if group booking exists
+      // NOTE: We don't check for status='paid' here because the webhook might be slightly delayed in updating status,
+      // but the record should exist.
+      const { data: groupBooking, error: gbError } = await supabaseAdmin
+        .from("group_bookings")
+        .select("*")
+        .eq("booking_reference", reference)
+        .single();
+
+      console.log('Group booking query result:', { groupBooking, gbError });
+
+      // If group booking exists, we can assume payment was successful (since Paystack verified it)
+      // and we just need to wait for webhook to create tickets
+      if (groupBooking) {
+        console.log('Group booking found. Payment verified by Paystack. Waiting for webhook to create tickets...');
+
+        // Wait a bit longer - webhook needs time to create multiple tickets
+        let retries = 3;
+        while (retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s
+          
+          const { data: retryTickets } = await supabaseAdmin
+            .from("tickets")
+            .select("*")
+            .in("status", ["reserved", "paid"])
+            .like("paystack_reference", `${reference}-%`);
+            
+          console.log(`Retry ${4 - retries} tickets result:`, { count: retryTickets?.length });
+          
+          if (retryTickets && retryTickets.length > 0) {
+             allTickets = retryTickets;
+             console.log('Tickets found on retry!');
+             break;
+          }
+          retries--;
+        }
+
+        if (!allTickets || allTickets.length === 0) {
+          // Still no tickets, force ticket creation here if webhook failed/delayed
+          console.log('Still no tickets after retries. Forcing ticket creation...');
+          
+          // Update group booking status
+          await supabaseAdmin
+            .from('group_bookings')
+            .update({ status: 'paid' })
+            .eq('id', groupBooking.id);
+            
+          // Create tickets manually
+          const ticketsToCreate = [];
+          const ticketQuantity = metadata.total_members ? parseInt(metadata.total_members) : (metadata.quantity || 1);
+          const amount = paymentData.amount;
+          const customer = paymentData.customer;
+          
+          for (let i = 0; i < ticketQuantity; i++) {
+            const ticketSecret = `${reference}::${metadata.event_id}::ticket-${i + 1}`;
+
+            ticketsToCreate.push({
+              event_id: metadata.event_id,
+              ticket_type_id: metadata.ticket_type_id,
+              email: customer.email,
+              name: metadata.primary_contact || customer.email?.split('@')[0] || 'Guest',
+              paystack_reference: `${reference}-${i + 1}`,
+              status: 'paid',
+              ticket_secret: ticketSecret,
+              price_paid: Math.round(amount / ticketQuantity),
+              group_booking_id: groupBooking.id,
+            });
+          }
+
+          const { data: createdTickets, error: createError } = await supabaseAdmin
+            .from('tickets')
+            .insert(ticketsToCreate)
+            .select();
+            
+          if (!createError && createdTickets) {
+             allTickets = createdTickets;
+             console.log('Successfully force-created tickets:', createdTickets.length);
+          } else {
+             console.error('Failed to force create tickets:', createError);
+          }
+        }
+      } else {
+        console.log('Group booking record not found');
+      }
     }
 
     if (!allTickets || allTickets.length === 0) {
