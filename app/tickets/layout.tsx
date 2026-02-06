@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Get Your Tickets | Hit Refresh 2026',
     description:
-      'Book your tickets for Hit Refresh 2026 - Career + Wellness Summit in Lagos, Nigeria.',
+      'Book your tickets for Hit Refresh 2026 - Career + Wellness Summit in Nigeria.',
   },
 };
 
