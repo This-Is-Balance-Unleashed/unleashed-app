@@ -8,7 +8,7 @@ export function FAQSchema() {
         name: 'What is Hit Refresh Conference?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Hit Refresh Conference is a premier career and wellness event in Lagos, Nigeria, taking place on February 28, 2026. It brings together industry leaders and wellness experts to help professionals achieve work-life balance and sustainable career growth.',
+          text: 'Hit Refresh Conference is a premier career and wellness event in Nigeria, taking place on February 28, 2026. It brings together industry leaders and wellness experts to help professionals achieve work-life balance and sustainable career growth.',
         },
       },
       {
@@ -16,15 +16,15 @@ export function FAQSchema() {
         name: 'Where is Hit Refresh Conference located?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Hit Refresh Conference takes place in Lagos, Nigeria, with both in-person and virtual attendance options available.',
+          text: 'Hit Refresh Conference takes place in Nigeria, with both in-person and virtual attendance options available.',
         },
       },
       {
         '@type': 'Question',
-        name: 'What wellness events are happening in Lagos in 2026?',
+        name: 'What wellness events are happening  in 2026?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Hit Refresh Conference is one of Lagos\' leading wellness events in 2026, focusing on career development, mental wellness, work-life balance, and sustainable professional growth. The event includes masterclasses, wellness sessions, and networking opportunities.',
+          text: 'Hit Refresh Conference is the leading wellness events in 2026, focusing on career development, mental wellness, work-life balance, and sustainable professional growth. The event includes masterclasses, wellness sessions, and networking opportunities.',
         },
       },
       {
@@ -45,7 +45,7 @@ export function FAQSchema() {
       },
       {
         '@type': 'Question',
-        name: 'What makes Hit Refresh different from other events in Lagos?',
+        name: 'What makes Hit Refresh different from other events?',
         acceptedAnswer: {
           '@type': 'Answer',
           text: 'Hit Refresh Conference is not a typical motivation rally. It\'s a practical wellness summit focused on actionable strategies for work-life balance, mental wellness, and sustainable career growth. Attendees learn to work smarter, break free from burnout, and build routines that protect their wellbeing.',

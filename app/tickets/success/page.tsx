@@ -42,6 +42,9 @@ function TicketSuccessContent() {
       return;
     }
 
+    let retryCount = 0;
+    const maxRetries = 5;
+
     // Verify payment and fetch ticket details
     const verifyPayment = async () => {
       try {
@@ -50,13 +53,19 @@ function TicketSuccessContent() {
 
         if (response.ok && data.success) {
           setTicketsData(data);
+        } else if (response.status === 202 && retryCount < maxRetries) {
+          // Tickets are still being generated, retry after delay
+          retryCount++;
+          setTimeout(verifyPayment, 2000); // Retry after 2 seconds
         } else {
           setError(data?.error || 'Failed to verify payment');
         }
       } catch {
         setError('Failed to verify payment. Please contact support.');
       } finally {
-        setLoading(false);
+        if (retryCount === 0 || retryCount >= maxRetries) {
+          setLoading(false);
+        }
       }
     };
 
@@ -202,10 +211,6 @@ function TicketSuccessContent() {
                     </Link>
                   </div>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Amount</span>
-                      <span className="font-medium">₦{(ticket.amount_paid / 100).toLocaleString('en-NG')}</span>
-                    </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Reference</span>
                       <span className="font-mono text-xs">{ticket.payment_reference}</span>

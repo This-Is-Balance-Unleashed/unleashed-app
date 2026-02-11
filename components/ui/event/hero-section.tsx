@@ -87,10 +87,10 @@ export function HeroSection() {
 
             {/* Subheading - fade in third */}
             <p className="text-base sm:text-lg md:text-xl max-w-lg leading-relaxed font-sans animate-fade-in-up animation-delay-400">
-              Join Lagos&apos; premier career and wellness event on February 28, 2026.
+              Join the premier career and wellness event on February 28, 2026.
               Hit Refresh Conference is your one-day pause to reset how you work,
               live, earn and lead. Get strategies that empower you to thrive in 2026
-              at this transformative wellness summit in Lagos, Nigeria.
+              at this transformative wellness summit in Nigeria.
             </p>
 
             {/* CTA Button - fade in last with scale */}

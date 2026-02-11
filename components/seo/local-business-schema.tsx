@@ -7,7 +7,7 @@ export function LocalBusinessSchema() {
     '@id': `${siteUrl}/#organization`,
     name: 'Hit Refresh Conference',
     alternateName: 'Unleashed Conference',
-    description: 'Premier career and wellness event organizer in Lagos, Nigeria, focused on professional development and mental wellness.',
+    description: 'Premier career and wellness event organizer in Nigeria, focused on professional development and mental wellness.',
     url: siteUrl,
     logo: `${siteUrl}/minimized_HIt Refresh Logo (Full).png`,
     image: `${siteUrl}/opengraph-image`,

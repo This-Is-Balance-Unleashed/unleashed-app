@@ -1,6 +1,13 @@
 'use client';
 
-import { useState, useEffect, use, useCallback } from 'react';
+import { useState, useEffect, use, useCallback, useMemo } from 'react';
+import { useActionState } from 'react';
+import {
+  initialFormState,
+  mergeForm,
+  useForm,
+  useTransform,
+} from '@tanstack/react-form-nextjs';
 import dynamic from 'next/dynamic';
 // import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,6 +15,10 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import useSWR from 'swr';
 import { useEasterEggs } from '@/hooks/useEasterEggs';
 import { PurchasePageSkeleton } from '@/components/ui/skeleton';
+import { purchaseTicketAction } from '../purchase-action';
+import { purchaseFormOptions } from '../purchase-form-options';
+import { GroupCheckoutForm } from '@/components/forms/group-checkout-form';
+import { OrderSummary, OrderSummaryRow } from '@/components/ui/order-summary';
 
 // Dynamically import Easter egg components to reduce initial bundle size
 const FlyingBird = dynamic(
@@ -40,10 +51,36 @@ interface Event {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+// Helper to determine if ticket is a group/corporate ticket
+const isGroupOrCorporateTicket = (ticketTypeId: string) => {
+  return ticketTypeId.endsWith('000000000003') || // Corporate Refresh
+         ticketTypeId.endsWith('000000000005') || // Corporate VIP
+         ticketTypeId.endsWith('000000000006');   // Group Refresh
+};
+
+// Helper to get booking details for group/corporate tickets
+// Returns the number of members per ticket package
+const getGroupBookingDetails = (ticketTypeId: string) => {
+  if (ticketTypeId.endsWith('000000000003')) {
+    return { type: 'corporate' as const, membersPerTicket: 8 }; // Corporate Refresh: 8 members per ticket
+  } else if (ticketTypeId.endsWith('000000000005')) {
+    return { type: 'corporate' as const, membersPerTicket: 4 }; // Corporate VIP: 4 members per ticket
+  } else if (ticketTypeId.endsWith('000000000006')) {
+    return { type: 'group' as const, membersPerTicket: 6 }; // Group Refresh: 6 members per ticket
+  }
+  return null;
+};
+
 export default function PurchasePage({ params }: { params: Promise<{ ticketTypeId: string }> }) {
   const { ticketTypeId } = use(params);
   // const router = useRouter();
   const [step, setStep] = useState<'details' | 'payment'>('details');
+  const [state, action, isPending] = useActionState(purchaseTicketAction, initialFormState);
+
+  const form = useForm({
+    ...purchaseFormOptions,
+    transform: useTransform((baseForm) => mergeForm(baseForm, state!), [state]),
+  });
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -89,6 +126,15 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
   const event = data?.event || null;
 
   const SERVICE_FEE_PERCENT = 2.5; // 2.5% service fee
+
+  // Handle redirect to payment URL
+  useEffect(() => {
+    if (state && 'success' in state && state.success && 'paymentUrl' in state) {
+      if (typeof window !== 'undefined') {
+        window.location.href = state.paymentUrl as string;
+      }
+    }
+  }, [state]);
 
   // Easter egg handler - automatically apply EARLYBIRD coupon
   const handleEasterEggFound = useCallback(async () => {
@@ -179,16 +225,13 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     });
   };
 
-  const calculatePrices = () => {
-    if (!ticketType) return { subtotal: 0, serviceFee: 0, total: 0 };
-
-    const basePrice = couponDiscount ? couponDiscount.new_price : ticketType.price_in_kobo;
-    const subtotal = basePrice * formData.quantity;
-    const serviceFee = Math.round(subtotal * (SERVICE_FEE_PERCENT / 100));
-    const total = subtotal + serviceFee;
-
-    return { subtotal, serviceFee, total };
-  };
+  // Move these up before any conditional returns
+  const handleCouponClick = useCallback((e: React.MouseEvent) => {
+    handleShiftAltClick(e);
+    if (!e.defaultPrevented) {
+      setIsCouponDialogOpen(true);
+    }
+  }, [handleShiftAltClick]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -220,7 +263,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (step === 'details') {
@@ -228,35 +271,16 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         setStep('payment');
       }
     } else {
-      // Payment step - call purchase API
-      calculatePrices();
+      // Payment step - sync form data to TanStack Form and submit
+      form.setFieldValue('firstName', formData.firstName);
+      form.setFieldValue('lastName', formData.lastName);
+      form.setFieldValue('email', formData.email);
+      form.setFieldValue('careerCategory', formData.careerCategory);
+      form.setFieldValue('quantity', formData.quantity);
+      form.setFieldValue('couponCode', formData.couponCode);
 
-      try {
-        const response = await fetch('/api/tickets/purchase', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: formData.email,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            event_id: event?.id,
-            ticket_type_id: ticketType?.id,
-            quantity: formData.quantity,
-            coupon_code: formData.couponCode || undefined,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.url) {
-          // Redirect to Paystack
-          window.location.href = data.url;
-        } else {
-          alert(data.error || 'Failed to initialize payment');
-        }
-      } catch (error) {
-        alert('An error occurred. Please try again.');
-      }
+      // Trigger form submission which will call the server action
+      form.handleSubmit();
     }
   };
 
@@ -286,10 +310,75 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         setCouponDiscount(null);
       }
     } catch {
-      alert('Failed to apply coupon');
+      console.log('Failed to apply coupon');
     }
   };
 
+  // Calculate prices memoized (safe to call here)
+  // Service fee is calculated on ORIGINAL price, discount applies to base only
+  const calculatePrices = useCallback(() => {
+    if (!ticketType) return { originalPrice: 0, subtotal: 0, serviceFee: 0, total: 0, discountAmount: 0 };
+
+    const originalPrice = ticketType.price_in_kobo * formData.quantity;
+    const discountedPrice = couponDiscount
+      ? couponDiscount.new_price * formData.quantity
+      : originalPrice;
+    const discountAmount = originalPrice - discountedPrice;
+
+    // Service fee on ORIGINAL price (before discount)
+    const serviceFee = Math.round(originalPrice * (SERVICE_FEE_PERCENT / 100));
+    const total = discountedPrice + serviceFee;
+
+    return { originalPrice, subtotal: discountedPrice, serviceFee, total, discountAmount };
+  }, [ticketType, couponDiscount, formData.quantity, SERVICE_FEE_PERCENT]);
+
+  // Update priceData when dependencies change
+  const currentPriceData = useMemo(() => calculatePrices(), [calculatePrices]);
+
+  const summaryContent = useMemo(() => {
+    // Only generate content if data is available
+    if (!ticketType) return null;
+
+    const { subtotal, serviceFee, total } = currentPriceData;
+
+    return (
+      <>
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <p className="font-semibold text-gray-900">{ticketType.name}</p>
+            <p className="text-sm text-gray-600">Qty: {formData.quantity}</p>
+          </div>
+          <p className="font-semibold text-gray-900">
+            {formatPrice(ticketType.price_in_kobo)}
+          </p>
+        </div>
+
+        {couponDiscount && (
+          <div className="flex justify-between items-center mb-4 text-green-600">
+            <p className="text-sm">Coupon Discount</p>
+            <p className="text-sm font-semibold">
+              -{formatPrice(couponDiscount.discount_amount * formData.quantity)}
+            </p>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-gray-700">Subtotal</p>
+          <p className="font-semibold text-gray-900">{formatPrice(subtotal)}</p>
+        </div>
+
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-gray-700">Service fee</p>
+          <p className="text-gray-900">{formatPrice(serviceFee)}</p>
+        </div>
+      </>
+    );
+  }, [ticketType, formData.quantity, couponDiscount, currentPriceData]);
+
+  if (isLoading) {
+    return <PurchasePageSkeleton />;
+  }
+  
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -304,10 +393,6 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     );
   }
 
-  if (isLoading) {
-    return <PurchasePageSkeleton />;
-  }
-
   if (!ticketType || !event) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -319,6 +404,23 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         </div>
       </div>
     );
+  }
+
+  if (isGroupOrCorporateTicket(ticketTypeId)) {
+    const bookingDetails = getGroupBookingDetails(ticketTypeId);
+
+    if (bookingDetails) {
+      return (
+        <GroupCheckoutForm
+          ticketTypeId={ticketType.id}
+          ticketTypeName={ticketType.name}
+          basePrice={ticketType.price_in_kobo}
+          membersPerTicket={bookingDetails.membersPerTicket}
+          bookingType={bookingDetails.type}
+          event={event}
+        />
+      );
+    }
   }
 
   if (isExpired) {
@@ -355,7 +457,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     );
   }
 
-  const { subtotal, serviceFee, total } = calculatePrices();
+  const { total } = currentPriceData;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -363,7 +465,11 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         <div className="grid lg:grid-cols-[1fr_400px] gap-8">
           {/* Form Section */}
           <div className="bg-white rounded-lg shadow-sm p-8">
-            <form onSubmit={handleSubmit}>
+            <form action={action as never}>
+              {/* Hidden fields for server action */}
+              <input type="hidden" name="eventId" value={event?.id || ''} />
+              <input type="hidden" name="ticketTypeId" value={ticketType?.id || ''} />
+              <input type="hidden" name="couponCode" value={formData.couponCode || ''} />
               {/* Step 1: Details */}
               {step === 'details' && (
                 <>
@@ -381,10 +487,11 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                   <div className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
                           *First name
                         </label>
                         <input
+                          id="firstName"
                           type="text"
                           name="firstName"
                           value={formData.firstName}
@@ -397,10 +504,11 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
                           *Last name
                         </label>
                         <input
+                          id="lastName"
                           type="text"
                           name="lastName"
                           value={formData.lastName}
@@ -414,10 +522,11 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                         *Email
                       </label>
                       <input
+                        id="email"
                         type="email"
                         name="email"
                         value={formData.email}
@@ -429,10 +538,10 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                       )}
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-4">
+                    <fieldset>
+                      <legend className="block text-sm font-medium text-gray-700 mb-4">
                         *Which of these career category best describes you?
-                      </label>
+                      </legend>
                       <div className="space-y-3">
                         {[
                           'Entrepreneur',
@@ -442,8 +551,9 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                           'Creative',
                           'Prefer not to disclose',
                         ].map((category) => (
-                          <label key={category} className="flex items-center space-x-3 cursor-pointer">
+                          <label key={category} htmlFor={`career-${category.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center space-x-3 cursor-pointer">
                             <input
+                              id={`career-${category.toLowerCase().replace(/\s+/g, '-')}`}
                               type="radio"
                               name="careerCategory"
                               value={category}
@@ -458,10 +568,10 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                       {errors.careerCategory && (
                         <p className="text-red-500 text-sm mt-2">{errors.careerCategory}</p>
                       )}
-                    </div>
+                    </fieldset>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
                         *Quantity
                       </label>
                       <div className="flex items-center space-x-4">
@@ -469,12 +579,14 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, quantity: Math.max(1, prev.quantity - 1) }))}
                           className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                          aria-label="Decrease quantity"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                           </svg>
                         </button>
                         <input
+                          id="quantity"
                           type="number"
                           name="quantity"
                           value={formData.quantity}
@@ -490,6 +602,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, quantity: Math.min(10, prev.quantity + 1) }))}
                           className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                          aria-label="Increase quantity"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -501,9 +614,10 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
 
                     <button
                       type="submit"
-                      className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+                      disabled={isPending}
+                      className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Get Your Ticket
+                      {isPending ? 'Processing...' : 'Get Your Ticket'}
                     </button>
                   </div>
                 </>
@@ -512,6 +626,13 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
               {/* Step 2: Payment */}
               {step === 'payment' && (
                 <>
+                  {/* Error Display */}
+                  {state && 'error' in state && state.error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                      {state.error as string}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center space-x-3">
                       <svg
@@ -593,9 +714,10 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
 
                   <button
                     type="submit"
-                    className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+                    disabled={isPending}
+                    className="w-full bg-primary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Place Order
+                    {isPending ? 'Processing...' : 'Place Order'}
                   </button>
                 </>
               )}
@@ -603,72 +725,14 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
           </div>
 
           {/* Summary Sidebar */}
-          <div className="bg-white rounded-lg shadow-sm p-8 h-fit sticky top-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-2 font-melo">{event.title}</h3>
-            <p className="text-sm text-gray-600 mb-6">
-              {formatDate(event.event_date)} – 16:00 WAT
-              <br />
-              Physical & Online
-            </p>
-
-            <button
-              type="button"
-              className="text-primary text-sm hover:underline mb-6 flex items-center space-x-1"
-              onClick={(e) => {
-                handleShiftAltClick(e);
-                if (!e.defaultPrevented) {
-                  setIsCouponDialogOpen(true);
-                }
-              }}
-              title="Hold Shift + Alt and click for a surprise..."
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              <span>Add Coupon Code</span>
-            </button>
-
-            <div className="border-t border-gray-200 pt-4">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <p className="font-semibold text-gray-900">{ticketType.name}</p>
-                  <p className="text-sm text-gray-600">Qty: {formData.quantity}</p>
-                </div>
-                <p className="font-semibold text-gray-900">
-                  {formatPrice(ticketType.price_in_kobo)}
-                </p>
-              </div>
-
-              {couponDiscount && (
-                <div className="flex justify-between items-center mb-4 text-green-600">
-                  <p className="text-sm">Coupon Discount</p>
-                  <p className="text-sm font-semibold">
-                    -{formatPrice(couponDiscount.discount_amount * formData.quantity)}
-                  </p>
-                </div>
-              )}
-
-              <div className="flex justify-between items-center mb-4">
-                <p className="text-gray-700">Subtotal</p>
-                <p className="font-semibold text-gray-900">{formatPrice(subtotal)}</p>
-              </div>
-
-              <div className="flex justify-between items-center mb-6">
-                <p className="text-gray-700">Service fee</p>
-                <p className="text-gray-900">{formatPrice(serviceFee)}</p>
-              </div>
-
-              <div className="bg-gray-100 -mx-8 px-8 py-4 flex justify-between items-center">
-                <p className="text-lg font-bold text-gray-900">Total</p>
-                <p className="text-lg font-bold text-gray-900">{formatPrice(total)}</p>
-              </div>
-            </div>
-          </div>
+          <OrderSummary
+            eventTitle={event.title}
+            eventDate={event.event_date}
+            onAddCouponClick={handleCouponClick}
+            total={total}
+          >
+            {summaryContent}
+          </OrderSummary>
         </div>
       </div>
 

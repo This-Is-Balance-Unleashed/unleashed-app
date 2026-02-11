@@ -49,12 +49,12 @@ export function ValuePropositionSection() {
         {/* Section Header */}
         <div className={`max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-16 scroll-fade-in ${isVisible ? 'visible' : ''}`}>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-melo font-semibold mb-4">
-            <span className="text-gradient-primary">Why Wellness Events in Lagos Matter</span>
+            <span className="text-gradient-primary">Why Wellness Events Matter</span>
           </h2>
           {/* Green underline decoration */}
           <MotivationIcon className="absolute top-14 sm:top-10 right-1/10 sm:right-4/15 mx-auto w-48 sm:w-64 md:w-80 hidden sm:block" />
           <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-sans mt-6 sm:mt-8 md:mt-10">
-            Hit Refresh Conference isn&apos;t just another event in Lagos - it&apos;s a wellness movement.
+            Hit Refresh Conference isn&apos;t just another event - it&apos;s a wellness movement.
             You&apos;ve been giving your best: your time, your care, your energy. But lately, the
             spark feels dimmer & the days feel heavier. And even when you rest, it doesn&apos;t feel
             like it&apos;s enough.

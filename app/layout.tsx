@@ -55,23 +55,23 @@ export const metadata: Metadata = {
     locale: "en_NG",
     url: siteUrl,
     siteName: "Hit Refresh Conference",
-    title: "Hit Refresh Conference 2026 | Career & Wellness Event in Lagos",
+    title: "Hit Refresh Conference 2026 | Career & Wellness Event in Nigeria",
     description:
-      "Join Hit Refresh Conference - Lagos' premier wellness event on February 28, 2026. Transform your career and well-being with industry leaders at this wellness summit in Lagos, Nigeria.",
+      "Join Hit Refresh Conference - A premier wellness event on February 28, 2026. Transform your career and well-being with industry leaders at this wellness summit in Nigeria.",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Hit Refresh Conference - Wellness Event in Lagos 2026",
+        alt: "Hit Refresh Conference - Wellness Event in Nigeria 2026",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hit Refresh Conference | Lagos Wellness Event 2026",
+    title: "Hit Refresh Conference | Nigeria Wellness Event 2026",
     description:
-      "Hit Refresh Conference - February 28, 2026 in Lagos. Join Nigeria's leading career and wellness event.",
+      "Hit Refresh Conference - February 28, 2026. Join Nigeria's leading career and wellness event.",
     images: ["/opengraph-image"],
     creator: "@balanceunleashd",
   },
