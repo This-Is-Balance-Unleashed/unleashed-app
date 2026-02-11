@@ -133,6 +133,26 @@ async function handlePaymentVerification(reference: string) {
           if (!createError && createdTickets) {
              allTickets = createdTickets;
              console.log('Successfully force-created tickets:', createdTickets.length);
+
+             // Link tickets to group members by position
+             // Ticket[0] = primary contact, Ticket[1] = member_position 1, etc.
+             const { data: groupMembers } = await supabaseAdmin
+               .from('group_members')
+               .select('id, member_position')
+               .eq('group_booking_id', groupBooking.id)
+               .order('member_position');
+
+             if (groupMembers && groupMembers.length > 0) {
+               const memberUpdates = groupMembers
+                 .filter(member => member.member_position < createdTickets.length)
+                 .map(member =>
+                   supabaseAdmin
+                     .from('group_members')
+                     .update({ assigned_ticket_id: createdTickets[member.member_position].id })
+                     .eq('id', member.id)
+                 );
+               await Promise.all(memberUpdates);
+             }
           } else {
              console.error('Failed to force create tickets:', createError);
           }

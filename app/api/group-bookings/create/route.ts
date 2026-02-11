@@ -288,15 +288,20 @@ export async function POST(request: Request) {
       const validMembers = members.filter(m => m.name || m.email);
 
       if (validMembers.length > 0) {
-        const memberRecords = validMembers.map((member) => ({
+        const memberRecords = validMembers.map((member, index) => ({
           group_booking_id: groupBooking.id,
           name: member.name || null,
           email: member.email || null,
+          member_position: index + 1,
         }));
 
-        await supabaseAdmin
+        const { error: memberError } = await supabaseAdmin
           .from('group_members')
           .insert(memberRecords);
+
+        if (memberError) {
+          console.error('Failed to save group members:', memberError);
+        }
       }
     }
 

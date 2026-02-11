@@ -9,7 +9,6 @@ import { groupFormOptions } from './group-form-options';
 const serverValidate = createServerValidate({
   ...groupFormOptions,
   onServerValidate: ({ value }) => {
-    debugger
     console.log('server validate', value)
     // Add any server-side validation here
     if (!value.primaryContactName || value.primaryContactName.trim() === '') {
@@ -63,8 +62,12 @@ export async function createGroupBookingAction(prev: unknown, formData: FormData
       apiFormData.append('groupName', validatedData.groupName || '');
     }
 
-    if (validatedData.provideMemberDetails && validatedData.members) {
-      apiFormData.append('members', JSON.stringify(validatedData.members));
+    // Read members from hidden field (React-controlled inputs have no name attr, so
+    // they don't appear in native FormData — we serialize them via form.Subscribe instead)
+    const provideMemberDetails = formData.get('provideMemberDetailsValue') === 'true';
+    const membersArray = formData.get('membersArray') as string;
+    if (provideMemberDetails && membersArray) {
+      apiFormData.append('members', membersArray);
     }
 
     // Call API to create booking

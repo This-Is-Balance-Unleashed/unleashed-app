@@ -75,6 +75,26 @@ export async function POST(request: Request) {
           throw createError;
         }
 
+        // Link tickets to group members by position
+        // Ticket[0] = primary contact, Ticket[1] = member_position 1, etc.
+        const { data: groupMembers } = await supabaseAdmin
+          .from('group_members')
+          .select('id, member_position')
+          .eq('group_booking_id', metadata.group_booking_id)
+          .order('member_position');
+
+        if (groupMembers && createdTickets && groupMembers.length > 0) {
+          const memberUpdates = groupMembers
+            .filter(member => member.member_position < createdTickets.length)
+            .map(member =>
+              supabaseAdmin
+                .from('group_members')
+                .update({ assigned_ticket_id: createdTickets[member.member_position].id })
+                .eq('id', member.id)
+            );
+          await Promise.all(memberUpdates);
+        }
+
         reservedTickets = createdTickets;
       } else {
         // 2. Find reserved tickets for this transaction (regular tickets)

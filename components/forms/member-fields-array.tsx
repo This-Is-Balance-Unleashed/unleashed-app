@@ -1,8 +1,9 @@
 /** eslint-disable react/no-children-prop */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ReactFormExtendedApi } from '@tanstack/react-form-nextjs';
+import { useStore } from '@tanstack/react-form';
 import { groupFormOptions } from './group-form-options';
 
 type FormData = (typeof groupFormOptions)['defaultValues'];
@@ -14,7 +15,34 @@ interface MemberFieldsArrayProps {
 
 export function MemberFieldsArray({ form, memberCount }: MemberFieldsArrayProps) {
   const [showMembers, setShowMembers] = useState(false);
-  const { Field, setFieldValue } = form;
+  const { Field, setFieldValue, store } = form;
+
+  // Sync members array length when memberCount changes or showMembers changes
+  const provideMemberDetails = useStore(store, (state: any) => state.values.provideMemberDetails);
+  const currentMembers = useStore(store, (state: any) => state.values.members);
+
+  useEffect(() => {
+    if (provideMemberDetails) {
+      if (!currentMembers) {
+        setFieldValue('members', Array.from({ length: memberCount }, () => ({ name: '', email: '' })));
+      } else if (currentMembers.length !== memberCount) {
+        // Resize array: keep existing, add new or truncate
+        const newMembers = [...currentMembers];
+        if (newMembers.length < memberCount) {
+          // Add missing
+          const needed = memberCount - newMembers.length;
+          for (let i = 0; i < needed; i++) {
+            newMembers.push({ name: '', email: '' });
+          }
+        } else {
+          // Truncate (optional, or just keep extra?)
+          // Usually better to truncate to match visual UI
+          newMembers.length = memberCount;
+        }
+        setFieldValue('members', newMembers);
+      }
+    }
+  }, [memberCount, provideMemberDetails, setFieldValue, currentMembers?.length]); // Only depend on length to avoid loops
 
   return (
     <div className="mb-8">
@@ -32,9 +60,11 @@ export function MemberFieldsArray({ form, memberCount }: MemberFieldsArrayProps)
                   setShowMembers(isChecked);
 
                   if (isChecked) {
-                    setFieldValue('members', Array(memberCount).fill({ name: '', email: '' }));
-                  } else {
-                    setFieldValue('members', []);
+                    // Initialize if empty
+                    const existing = form.getFieldValue('members') || [];
+                    if (existing.length !== memberCount) {
+                       setFieldValue('members', Array.from({ length: memberCount }, () => ({ name: '', email: '' })));
+                    }
                   }
                 }}
                 className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"

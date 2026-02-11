@@ -306,6 +306,15 @@ export function GroupCheckoutForm({
                   />
                 )}
               </form.Subscribe>
+              {/* Serialize members array for form submission (inputs have no name attr) */}
+              <form.Subscribe selector={(state) => ({ members: state.values.members, provide: state.values.provideMemberDetails })}>
+                {({ members, provide }) => (
+                  <>
+                    <input type="hidden" name="membersArray" value={JSON.stringify(members || [])} />
+                    <input type="hidden" name="provideMemberDetailsValue" value={provide ? 'true' : 'false'} />
+                  </>
+                )}
+              </form.Subscribe>
 
               {/* Quantity Selector */}
               <div className="mb-8 p-6 bg-gray-50 rounded-xl">
