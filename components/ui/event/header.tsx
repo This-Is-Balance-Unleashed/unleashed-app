@@ -8,6 +8,7 @@ import { Button } from './button';
 
 const navigation = [
   // { name: 'Home', href: '/' },
+  { name: 'Speakers', href: '/speakers' },
   { name: 'Tickets', href: '/tickets' },
   { name: 'Partner', href: '/partner' },
   // { name: 'Sponsor', href: '/sponsor' },
