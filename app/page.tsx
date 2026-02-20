@@ -15,6 +15,10 @@ const ExperienceSection = dynamic(
   () => import('@/components/ui/event/experience-section').then(m => m.ExperienceSection),
   { ssr: true }
 );
+const SponsorsSection = dynamic(
+  () => import('@/components/ui/event/sponsors-section').then(m => m.SponsorsSection),
+  { ssr: true }
+);
 const TargetAudienceSection = dynamic(
   () => import('@/components/ui/event/target-audience-section').then(m => m.TargetAudienceSection),
   { ssr: true }
@@ -56,6 +60,7 @@ export default function Home() {
       <HeroSection />
       <ValuePropositionSection />
       <ExperienceSection />
+      <SponsorsSection />
 
       {/* Green wave separator */}
       <div className="relative z-50 -mt-12">
