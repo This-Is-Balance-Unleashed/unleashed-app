@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'Where is Hit Refresh Conference happening?',
-    answer: 'Hit Refresh Conference will take place in Lagos, Nigeria, with both in-person and virtual attendance options available.',
+    answer: 'Hit Refresh Conference will take place at Waterfalls Event Center, Oregun, Ikeja, Lagos, with both in-person and virtual attendance options available.',
   },
   {
     question: 'What makes this different from other events?',
@@ -23,7 +23,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'When is Hit Refresh Conference 2026?',
-    answer: 'Hit Refresh Conference 2026 takes place on February 28, 2026, from 8:00 AM to 4:00 PM WAT in Lagos, Nigeria.',
+    answer: 'Hit Refresh Conference 2026 takes place on February 28, 2026, from 8:00 AM to 4:00 PM WAT at Waterfalls Event Center, Oregun, Ikeja, Lagos.',
   },
   {
     question: 'What are the ticket prices?',

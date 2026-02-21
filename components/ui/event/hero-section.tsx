@@ -65,7 +65,7 @@ export function HeroSection() {
                 style={dateBadgeStyle}
               >
                 <span className="text-xs sm:text-sm md:text-base font-medium font-sans">
-                  28th February, 2026 | Lagos, Nigeria
+                  28th February, 2026 | Waterfalls Event Center, Ikeja, Lagos
                 </span>
               </div>
             </div>

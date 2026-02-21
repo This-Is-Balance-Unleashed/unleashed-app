@@ -114,7 +114,7 @@ export function Footer() {
               <h3 className="text-xl sm:text-2xl font-bold font-melo mb-4">Event Details</h3>
               <div className="space-y-2">
                 <p className="text-sm sm:text-base font-sans"><strong>Date:</strong> February 28th, 2026</p>
-                <p className="text-sm sm:text-base font-sans"><strong>Location:</strong> Lagos, Nigeria</p>
+                <p className="text-sm sm:text-base font-sans"><strong>Venue:</strong> Waterfalls Event Center, Oregun, Ikeja, Lagos</p>
               </div>
               <div className="space-y-2 mt-4">
                 <p className="text-sm sm:text-base font-sans">Have any questions?</p>
