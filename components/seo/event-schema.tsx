@@ -16,17 +16,18 @@ export function EventSchema() {
     location: [
       {
         '@type': 'Place',
-        name: 'Lagos, Nigeria',
+        name: 'Waterfalls Event Center',
         address: {
           '@type': 'PostalAddress',
-          addressLocality: 'Lagos',
+          streetAddress: 'Oregun',
+          addressLocality: 'Ikeja',
           addressRegion: 'Lagos State',
           addressCountry: 'NG',
         },
         geo: {
           '@type': 'GeoCoordinates',
-          latitude: '6.5244',
-          longitude: '3.3792',
+          latitude: '6.5744',
+          longitude: '3.3530',
         },
       },
       {
