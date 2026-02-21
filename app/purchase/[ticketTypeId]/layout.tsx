@@ -53,6 +53,9 @@ export async function generateMetadata({
   return {
     title: `${ticketInfo.name} - ${ticketInfo.price}`,
     description: `${ticketInfo.description}. Get your ticket for Hit Refresh: Career + Wellness Summit 2026, Nigeria.`,
+    alternates: {
+      canonical: `/purchase/${ticketTypeId}`,
+    },
     openGraph: {
       title: `${ticketInfo.name} - Hit Refresh Summit 2026`,
       description: ticketInfo.description,

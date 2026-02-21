@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: 'Partner With Us',
   description:
     'Partner with Hit Refresh 2026 - Nigeria\'s premier Career and Wellness Summit. Join us in empowering 1,000+ professionals through sponsorship packages starting from ₦1M. Platinum, Gold, Silver, and Bronze tiers available.',
+  alternates: {
+    canonical: '/partner',
+  },
   keywords: [
     'Hit Refresh partnership',
     'sponsor career summit',
@@ -18,6 +21,7 @@ export const metadata: Metadata = {
     description:
       'Become a partner at Nigeria\'s premier Career and Wellness Summit. Connect with 1,000+ mid-to-senior professionals and leaders.',
     type: 'website',
+    url: '/partner',
   },
   twitter: {
     card: 'summary_large_image',

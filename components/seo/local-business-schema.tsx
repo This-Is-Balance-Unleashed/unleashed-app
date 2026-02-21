@@ -9,7 +9,7 @@ export function LocalBusinessSchema() {
     alternateName: 'Unleashed Conference',
     description: 'Premier career and wellness event organizer in Nigeria, focused on professional development and mental wellness.',
     url: siteUrl,
-    logo: `${siteUrl}/minimized_HIt Refresh Logo (Full).png`,
+    logo: `${siteUrl}/minimized_HIt%20Refresh%20Logo%20(Full).png`,
     image: `${siteUrl}/opengraph-image`,
     address: {
       '@type': 'PostalAddress',

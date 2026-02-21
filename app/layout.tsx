@@ -42,6 +42,9 @@ export const metadata: Metadata = {
     "career growth events Lagos",
     "Hit Refresh Summit",
   ],
+  alternates: {
+    canonical: "/",
+  },
   authors: [{ name: "Unleashed Conference" }],
   creator: "Unleashed Conference",
   publisher: "Unleashed Conference",

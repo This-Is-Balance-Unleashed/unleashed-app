@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: 'Sponsor a Ticket',
   description:
     'Sponsor a ticket for someone who cannot afford to attend Hit Refresh 2026. Make a difference by enabling access to career and wellness resources for professionals in need.',
+  alternates: {
+    canonical: '/sponsor',
+  },
   keywords: [
     'sponsor a ticket',
     'donate conference ticket',
@@ -18,6 +21,7 @@ export const metadata: Metadata = {
     description:
       'Make a difference by sponsoring a ticket for someone who cannot afford to attend Hit Refresh 2026 Career + Wellness Summit.',
     type: 'website',
+    url: '/sponsor',
   },
   twitter: {
     card: 'summary_large_image',

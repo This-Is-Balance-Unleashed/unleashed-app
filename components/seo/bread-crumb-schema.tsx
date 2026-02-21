@@ -14,13 +14,13 @@ export function BreadcrumbSchema() {
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Hit Refresh Conference',
-        item: siteUrl,
+        name: 'Tickets',
+        item: `${siteUrl}/tickets`,
       },
       {
         '@type': 'ListItem',
         position: 3,
-        name: 'Events in Lagos',
+        name: 'Hit Refresh Conference 2026',
         item: siteUrl,
       },
     ],

@@ -19,7 +19,7 @@ export default async function Image() {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#1a1a1a',
+          backgroundColor: '#f5f1ed',
           padding: '60px 80px',
           fontFamily: 'system-ui, sans-serif',
         }}
@@ -44,13 +44,14 @@ export default async function Image() {
               style={{
                 width: '8px',
                 height: '8px',
-                backgroundColor: '#7C3AED',
+                backgroundColor: '#FF8E00',
                 marginRight: '12px',
+                borderRadius: '50%',
               }}
             />
             <div
               style={{
-                color: '#fff',
+                color: '#1a1a1a',
                 fontSize: '20px',
                 fontWeight: '400',
                 letterSpacing: '0.5px',
@@ -71,7 +72,7 @@ export default async function Image() {
               style={{
                 fontSize: '80px',
                 fontWeight: '700',
-                color: '#fff',
+                color: '#1a1a1a',
                 lineHeight: '0.9',
                 marginBottom: '20px',
               }}
@@ -82,7 +83,7 @@ export default async function Image() {
               style={{
                 fontSize: '80px',
                 fontWeight: '700',
-                color: '#fff',
+                color: '#1a1a1a',
                 lineHeight: '0.9',
                 marginBottom: '20px',
               }}
@@ -93,7 +94,7 @@ export default async function Image() {
               style={{
                 fontSize: '80px',
                 fontWeight: '700',
-                background: 'linear-gradient(90deg, #7C3AED 0%, #14B8A6 100%)',
+                background: 'linear-gradient(90deg, #FF8E00 0%, #39B54A 100%)',
                 backgroundClip: 'text',
                 color: 'transparent',
                 lineHeight: '0.9',
@@ -105,7 +106,7 @@ export default async function Image() {
 
           <div
             style={{
-              color: '#a1a1a1',
+              color: '#6b6b6b',
               fontSize: '24px',
               fontWeight: '400',
               letterSpacing: '0.5px',
@@ -116,7 +117,7 @@ export default async function Image() {
           </div>
         </div>
 
-        {/* Right side - Shader pattern */}
+        {/* Right side - Decorative pattern */}
         <div
           style={{
             display: 'flex',
@@ -125,7 +126,7 @@ export default async function Image() {
             position: 'relative',
           }}
         >
-          {/* Create a grid pattern with shader effect */}
+          {/* Checkered pattern with brand colors */}
           <div
             style={{
               display: 'flex',
@@ -135,12 +136,10 @@ export default async function Image() {
               gap: '0',
             }}
           >
-            {/* Generate checkered pattern blocks */}
             {Array.from({ length: 8 }).map((_, row) =>
               Array.from({ length: 6 }).map((_, col) => {
-                // const index = row * 6 + col;
-                const isPurple = (row + col) % 3 === 0;
-                const isTeal = (row + col) % 3 === 1;
+                const isOrange = (row + col) % 3 === 0;
+                const isGreen = (row + col) % 3 === 1;
                 const isDotted = (row + col) % 2 === 0;
 
                 return (
@@ -149,18 +148,17 @@ export default async function Image() {
                     style={{
                       width: '16.666%',
                       height: '12.5%',
-                      backgroundColor: isPurple
-                        ? '#7C3AED'
-                        : isTeal
-                        ? '#14B8A6'
-                        : '#fff',
+                      backgroundColor: isOrange
+                        ? '#FF8E00'
+                        : isGreen
+                        ? '#39B54A'
+                        : '#e8e2da',
                       opacity: isDotted ? 0.9 : 0.3,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    {/* Add dots for checkered effect */}
                     {isDotted && (
                       <div
                         style={{
@@ -178,12 +176,12 @@ export default async function Image() {
                             style={{
                               width: '3px',
                               height: '3px',
-                              backgroundColor: isPurple
+                              backgroundColor: isOrange
                                 ? '#fff'
-                                : isTeal
-                                ? '#1a1a1a'
-                                : '#7C3AED',
-                              opacity: Math.random() > 0.5 ? 1 : 0.3,
+                                : isGreen
+                                ? '#f5f1ed'
+                                : '#FF8E00',
+                              opacity: i % 2 === 0 ? 1 : 0.3,
                               borderRadius: '50%',
                             }}
                           />
@@ -205,7 +203,7 @@ export default async function Image() {
               width: '100%',
               height: '100%',
               background:
-                'linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(20, 184, 166, 0.3) 100%)',
+                'linear-gradient(135deg, rgba(255, 142, 0, 0.2) 0%, rgba(57, 181, 74, 0.2) 100%)',
               mixBlendMode: 'overlay',
             }}
           />
