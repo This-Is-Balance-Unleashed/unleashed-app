@@ -52,7 +52,7 @@ export default function Home() {
       <AnnouncementBanner
         message="🎉 Early Bird Special: Use code EARLYBIRD for 20% off all tickets!"
         ctaText="Get Tickets"
-        ctaLink="#pricing"
+        ctaLink="/tickets"
         variant="urgent"
         dismissible={true}
       />
