@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import type { Route } from 'next';
 import { Transition } from '@headlessui/react';
 
 interface AnnouncementBannerProps {
@@ -108,7 +109,7 @@ export function AnnouncementBanner({
             {/* CTA Button */}
             {ctaText && ctaLink && (
               <Link
-                href={ctaLink}
+                href={ctaLink as Route}
                 className="shrink-0 bg-white text-gray-900 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
               >
                 {ctaText}
