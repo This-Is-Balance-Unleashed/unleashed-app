@@ -19,12 +19,6 @@ const noiseTextureStyle = {
   backgroundSize: "cover",
 } as const;
 
-const dateBadgeStyle = {
-  backgroundImage: "url(/border-date.svg)",
-  backgroundSize: "100% 100%",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "center",
-} as const;
 
 export function HeroSection() {
   return (
@@ -60,13 +54,28 @@ export function HeroSection() {
           <div className="relative space-y-6 sm:space-y-8">
             {/* Date/Location Badge - fade in first */}
             <div className="inline-block animate-fade-in-up">
-              <div
-                className="px-4 py-3 sm:px-8 sm:py-4 md:px-15 md:py-7 inline-flex items-center gap-2"
-                style={dateBadgeStyle}
-              >
-                <span className="text-xs sm:text-sm md:text-base font-medium font-sans">
+              <div className="relative px-8 py-4 sm:px-12 sm:py-5 md:px-16 md:py-7 inline-flex items-center gap-2">
+                <span className="text-xs sm:text-sm md:text-base font-medium font-sans relative z-10">
                   28th February, 2026 | Waterfalls Event Center, Ikeja, Lagos
                 </span>
+                <svg
+                  className="absolute inset-0 w-full h-full overflow-visible"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <ellipse
+                    cx="50"
+                    cy="50"
+                    rx="49"
+                    ry="47"
+                    fill="none"
+                    stroke="#ff8e00"
+                    strokeWidth="2"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
               </div>
             </div>
 
