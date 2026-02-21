@@ -20,8 +20,8 @@ const sponsors = [
     badge: 'Official Wellness Partner',
     logo: '/Mytherapist.ngLogos/Mytherapist.ng_logo_dark.png',
     href: 'https://mytherapist.ng',
-    logoWidth: 180,
-    logoHeight: 60,
+    logoWidth: 280,
+    logoHeight: 100,
   },
 ] as const;
 
@@ -50,7 +50,7 @@ export function SponsorsSection() {
 
         {/* Sponsor logos row */}
         <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-16">
-          {sponsors.map((sponsor) => (
+          {sponsors.map((sponsor: typeof sponsors[0]) => (
             <div key={sponsor.name} className="flex flex-col items-center gap-3">
               {/* Badge chip */}
               <span className="inline-block bg-primary/10 text-primary text-xs font-sans font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
@@ -69,7 +69,7 @@ export function SponsorsSection() {
                   alt={sponsor.name}
                   width={sponsor.logoWidth}
                   height={sponsor.logoHeight}
-                  className="h-12 sm:h-14 w-auto object-contain"
+                  className="h-20 sm:h-28 md:h-32 w-auto object-contain"
                 />
               </Link>
             </div>
