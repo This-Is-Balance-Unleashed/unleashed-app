@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/ui/event/hero-section';
 import { AnnouncementBanner } from '@/components/ui/event/announcement-banner';
+import { OfficialPartnerSection } from '@/components/ui/event/official-partner-section';
 import { EventSchema } from '@/components/seo/event-schema';
 import { FAQSchema } from '@/components/seo/faq-schema';
 import { LocalBusinessSchema } from '@/components/seo/local-business-schema';
@@ -13,10 +14,6 @@ const ValuePropositionSection = dynamic(
 );
 const ExperienceSection = dynamic(
   () => import('@/components/ui/event/experience-section').then(m => m.ExperienceSection),
-  { ssr: true }
-);
-const SponsorsSection = dynamic(
-  () => import('@/components/ui/event/sponsors-section').then(m => m.SponsorsSection),
   { ssr: true }
 );
 const TargetAudienceSection = dynamic(
@@ -50,17 +47,28 @@ export default function Home() {
 
       {/* Announcement Banner */}
       <AnnouncementBanner
-        message="🎉 Early Bird Special: Use code EARLYBIRD for 20% off all tickets!"
+        message="Early Bird Special: Use code EARLYBIRD for 20% off all tickets!"
         ctaText="Get Tickets"
         ctaLink="/tickets"
         variant="urgent"
         dismissible={true}
+        storageKey="announcement-banner-dismissed"
+      />
+
+      {/* Announcement Banner - Official Partner */}
+      <AnnouncementBanner
+        message="Hit Refresh is proudly supported by MyTherapist.ng — Nigeria's leading mental health platform"
+        ctaText="Visit MyTherapist.ng"
+        ctaLink="https://mytherapist.ng"
+        variant="success"
+        dismissible={true}
+        storageKey="partner-banner-dismissed"
       />
 
       <HeroSection />
+      <OfficialPartnerSection />
       <ValuePropositionSection />
       <ExperienceSection />
-      <SponsorsSection />
 
       {/* Green wave separator */}
       <div className="relative z-50 -mt-12">
