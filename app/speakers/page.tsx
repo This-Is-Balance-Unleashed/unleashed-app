@@ -54,6 +54,46 @@ const speakers = [
     titleLine2: 'Hypeman, Broadcaster, Label Director',
     image: '/speakers/Do2dtun.png',
   },
+  {
+    name: 'Raphael Oluwaseun',
+    title: 'Co-founder & CTO, Mytherapist.ng',
+    image: '/speakers/Raphael Oluwaseun.png',
+  },
+  {
+    name: 'Tayo Odunsi',
+    title: 'CEO, Panterra',
+    image: '/speakers/Tayo Odunsi.png',
+  },
+  {
+    name: 'Ademiju Fakoya',
+    title: 'Registered Associate Nutritionist',
+    image: '/speakers/Ademiju Fakoya.png',
+  },
+  {
+    name: 'Toluse Dove Francis',
+    title: 'Therapist & Life Coach, MyTherapist.ng',
+    image: '/speakers/Toluse Dove Francis.png',
+  },
+  {
+    name: 'Adaeze Nzekwe',
+    title: 'Technical Recruiter, Quidax',
+    image: '/speakers/Adaeze Nzekwe.png',
+  },
+  {
+    name: 'Joanna Okey',
+    title: 'Event Host',
+    image: '/speakers/Joanna Okey.png',
+  },
+  {
+    name: 'Abraham Whyte RC',
+    title: 'Event Host',
+    image: '/speakers/Abraham Whyte RC.png',
+  },
+  {
+    name: 'Rachael Onoja',
+    title: 'Convener',
+    image: '/speakers/Rachael Onoja.png',
+  },
 ] as const;
 
 // Style constants — defined outside component to prevent recreation per render
