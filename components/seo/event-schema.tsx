@@ -16,18 +16,18 @@ export function EventSchema() {
     location: [
       {
         '@type': 'Place',
-        name: 'Waterfalls Event Center',
+        name: 'Pistis Annex',
         address: {
           '@type': 'PostalAddress',
-          streetAddress: 'Oregun',
-          addressLocality: 'Ikeja',
+          streetAddress: 'Marwa',
+          addressLocality: 'Lekki',
           addressRegion: 'Lagos State',
           addressCountry: 'NG',
         },
         geo: {
           '@type': 'GeoCoordinates',
-          latitude: '6.5744',
-          longitude: '3.3530',
+          latitude: '6.4314',
+          longitude: '3.4219',
         },
       },
       {

@@ -56,7 +56,7 @@ export function HeroSection() {
             <div className="inline-block animate-fade-in-up">
               <div className="relative px-8 py-4 sm:px-12 sm:py-5 md:px-16 md:py-7 inline-flex items-center gap-2">
                 <span className="text-xs sm:text-sm md:text-base font-medium font-sans relative z-10">
-                  28th February, 2026 | Waterfalls Event Center, Ikeja, Lagos
+                  28th February, 2026 | Pistis Annex, Marwa, Lekki
                 </span>
                 <svg
                   className="absolute inset-0 w-full h-full overflow-visible"

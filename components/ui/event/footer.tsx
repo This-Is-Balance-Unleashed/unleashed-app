@@ -114,7 +114,18 @@ export function Footer() {
               <h3 className="text-xl sm:text-2xl font-bold font-melo mb-4">Event Details</h3>
               <div className="space-y-2">
                 <p className="text-sm sm:text-base font-sans"><strong>Date:</strong> February 28th, 2026</p>
-                <p className="text-sm sm:text-base font-sans"><strong>Venue:</strong> Waterfalls Event Center, Oregun, Ikeja, Lagos</p>
+                <p className="text-sm sm:text-base font-sans"><strong>Venue:</strong> Pistis Annex, Marwa, Lekki, Lagos</p>
+                <a
+                  href="https://www.google.com/maps/dir//Pistis+Conference+Centre,+1+Resurrection+Dr,+Lekki+Penninsula+II,+Lekki+105102,+Lagos,+Nigeria/@18.0034863,-76.7451944,15z/data=!4m8!4m7!1m0!1m5!1m1!1s0x103bf5d5e965daf9:0xa906d801c49e8072!2m2!1d3.4996588!2d6.4340673?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-sans text-primary hover:underline transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  Get Directions
+                </a>
               </div>
               <div className="space-y-2 mt-4">
                 <p className="text-sm sm:text-base font-sans">Have any questions?</p>

@@ -32,7 +32,7 @@ export function FAQSchema() {
         name: 'When is Hit Refresh Conference 2026?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Hit Refresh Conference 2026 takes place on February 28, 2026, from 8:00 AM to 4:00 PM WAT at Waterfalls Event Center, Oregun, Ikeja, Lagos.',
+          text: 'Hit Refresh Conference 2026 takes place on February 28, 2026, from 8:00 AM to 4:00 PM WAT at Pistis Annex, Marwa, Lekki, Lagos.',
         },
       },
       {

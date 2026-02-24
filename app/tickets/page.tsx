@@ -145,7 +145,7 @@ export default function TicketsPage() {
               Hit Refresh: Career + Wellness Summit
             </p>
             <p className="text-lg text-gray-400">
-              February 28, 2026 | Waterfalls Event Center, Ikeja, Lagos
+              February 28, 2026 | Pistis Annex, Marwa, Lekki, Lagos
             </p>
           </div>
         </div>
