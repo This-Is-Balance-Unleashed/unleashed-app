@@ -34,7 +34,7 @@ const EasterEggToast = dynamic(
 );
 
 // Easter egg coupon configuration
-const EASTER_EGG_COUPON_CODE = 'EARLYBIRD';
+const EASTER_EGG_COUPON_CODE = 'EASTER_EGG';
 
 interface GroupCheckoutFormProps {
   ticketTypeId: string;

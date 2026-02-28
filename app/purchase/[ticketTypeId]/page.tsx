@@ -145,7 +145,7 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          code: 'EARLYBIRD',
+          code: 'EASTER_EGG',
           ticket_type_id: ticketType.id,
           event_id: event?.id,
         }),
@@ -156,8 +156,8 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
       if (data.valid) {
         setEasterEggFound(true);
         setCouponDiscount(data);
-        setFormData((prev) => ({ ...prev, couponCode: 'EARLYBIRD' }));
-        setToastMessage('🐦 You caught the early bird! EARLYBIRD discount applied!');
+        setFormData((prev) => ({ ...prev, couponCode: 'EASTER_EGG' }));
+        setToastMessage('🐦 You caught the early bird! EASTER_EGG discount applied!');
         setShowToast(true);
       } else {
         setToastMessage(data.error || 'Coupon could not be applied');

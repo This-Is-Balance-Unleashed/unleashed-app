@@ -43,7 +43,7 @@ export function useEasterEggs({ onEasterEggFound }: UseEasterEggsOptions) {
     return () => clearInterval(interval);
   }, []); // Empty deps - refs handle the callback
 
-  // Easter Egg 2: Type "EARLYBIRD"
+  // Easter Egg 2: Type "EASTER_EGG"
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       // Ignore if typing in an input field
@@ -57,9 +57,9 @@ export function useEasterEggs({ onEasterEggFound }: UseEasterEggsOptions) {
       const key = e.key.toUpperCase();
 
       setKeySequence(prev => {
-        const newSequence = [...prev, key].slice(-9); // Keep last 9 characters
+        const newSequence = [...prev, key].slice(-10); // Keep last 10 characters
         const currentString = newSequence.join('');
-        const targetSequence = 'EARLYBIRD';
+        const targetSequence = 'EASTER_EGG';
 
         // Check if current sequence matches the beginning of our target
         if (targetSequence.startsWith(currentString) && currentString.length > 0) {
