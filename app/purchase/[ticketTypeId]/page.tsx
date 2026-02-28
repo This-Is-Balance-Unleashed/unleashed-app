@@ -18,7 +18,7 @@ import { PurchasePageSkeleton } from '@/components/ui/skeleton';
 import { purchaseTicketAction } from '../purchase-action';
 import { purchaseFormOptions } from '../purchase-form-options';
 import { GroupCheckoutForm } from '@/components/forms/group-checkout-form';
-import { OrderSummary, OrderSummaryRow } from '@/components/ui/order-summary';
+import { OrderSummary } from '@/components/ui/order-summary';
 
 // Dynamically import Easter egg components to reduce initial bundle size
 const FlyingBird = dynamic(
@@ -140,11 +140,6 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
   const handleEasterEggFound = useCallback(async () => {
     if (easterEggFound || !ticketType) return; // Only trigger once
 
-    setEasterEggFound(true);
-    setToastMessage('EARLYBIRD coupon applied automatically!');
-    setShowToast(true);
-
-    // Auto-apply EARLYBIRD coupon
     try {
       const response = await fetch('/api/coupons/check', {
         method: 'POST',
@@ -159,11 +154,19 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
       const data = await response.json();
 
       if (data.valid) {
+        setEasterEggFound(true);
         setCouponDiscount(data);
         setFormData((prev) => ({ ...prev, couponCode: 'EARLYBIRD' }));
+        setToastMessage('🐦 You caught the early bird! EARLYBIRD discount applied!');
+        setShowToast(true);
+      } else {
+        setToastMessage(data.error || 'Coupon could not be applied');
+        setShowToast(true);
       }
     } catch (error) {
       console.error('Failed to apply easter egg coupon:', error);
+      setToastMessage('Failed to apply coupon. Please try again.');
+      setShowToast(true);
     }
   }, [easterEggFound, ticketType, event]);
 
@@ -214,17 +217,6 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     return `₦${(kobo / 100).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   // Move these up before any conditional returns
   const handleCouponClick = useCallback((e: React.MouseEvent) => {
     handleShiftAltClick(e);
@@ -263,26 +255,26 @@ export default function PurchasePage({ params }: { params: Promise<{ ticketTypeI
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    if (step === 'details') {
-      if (validateForm()) {
-        setStep('payment');
-      }
-    } else {
-      // Payment step - sync form data to TanStack Form and submit
-      form.setFieldValue('firstName', formData.firstName);
-      form.setFieldValue('lastName', formData.lastName);
-      form.setFieldValue('email', formData.email);
-      form.setFieldValue('careerCategory', formData.careerCategory);
-      form.setFieldValue('quantity', formData.quantity);
-      form.setFieldValue('couponCode', formData.couponCode);
+  //   if (step === 'details') {
+  //     if (validateForm()) {
+  //       setStep('payment');
+  //     }
+  //   } else {
+  //     // Payment step - sync form data to TanStack Form and submit
+  //     form.setFieldValue('firstName', formData.firstName);
+  //     form.setFieldValue('lastName', formData.lastName);
+  //     form.setFieldValue('email', formData.email);
+  //     form.setFieldValue('careerCategory', formData.careerCategory);
+  //     form.setFieldValue('quantity', formData.quantity);
+  //     form.setFieldValue('couponCode', formData.couponCode);
 
-      // Trigger form submission which will call the server action
-      form.handleSubmit();
-    }
-  };
+  //     // Trigger form submission which will call the server action
+  //     form.handleSubmit();
+  //   }
+  // };
 
   const handleApplyCoupon = async () => {
     if (!couponInput.trim() || !ticketType) return;

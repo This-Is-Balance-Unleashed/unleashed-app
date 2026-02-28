@@ -98,7 +98,7 @@ export function useEasterEggs({ onEasterEggFound }: UseEasterEggsOptions) {
       setShowBird(true);
 
       // Animate bird across screen
-      const duration = 8000 + Math.random() * 4000; // 8-12 seconds
+      const duration = 15000 + Math.random() * 4000; // 8-12 seconds
       const startTime = Date.now();
 
       const animate = () => {
